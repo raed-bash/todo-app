@@ -1,4 +1,7 @@
-import { onMessageListener } from "./firebase";
+import { onMessageListener } from "./firebase/firebase";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import { AppRouter } from "./routers/router";
 
 function App() {
   onMessageListener()
@@ -10,9 +13,9 @@ function App() {
     });
 
   return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>Todo App</h1>
-    </div>
+    <Provider store={store}>
+      <AppRouter />
+    </Provider>
   );
 }
 
