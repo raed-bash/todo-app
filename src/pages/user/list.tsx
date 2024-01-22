@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getUsersAsync } from "./reducer/actions";
+import { useAppDispatch } from "../../app/hooks";
+import { getUsersAsync, getUsersAutocompleteAsync } from "./reducer/actions";
+import Autocomplete from "../../components/autocomplete-handler";
 
 function UserList() {
   const dispatch = useAppDispatch();
-  const users = useAppSelector((state) => state.user.items);
+  // const {} = useAppSelector((state) => state.user.items);
 
   useEffect(() => {
     dispatch(
@@ -14,9 +15,28 @@ function UserList() {
         () => {}
       )
     );
-  }, []);
+  }, [dispatch]);
 
-  return <h1>User List</h1>;
+  return (
+    <h1>
+      User List
+      <Autocomplete<any>
+        loadItemsAsync={getUsersAutocompleteAsync}
+        onChange={(value) => {
+          console.log(value);
+        }}
+        onChangeStr={() => {
+          console.log("change str");
+        }}
+        onClear={() => {
+          console.log("external clear");
+        }}
+        getOptionLabel={(option) => option.title}
+        justSelect
+        renderOption={(option) => option.title}
+      />
+    </h1>
+  );
 }
 
 export default UserList;

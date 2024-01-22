@@ -5,6 +5,7 @@ import { PaginatedQueryDto } from "../../../common/dto/paginated-query.dto";
 import { actions, User, UserChangePassword } from "./slice";
 import { PaginatedResultsDto } from "../../../common/dto/paginated-result.dto";
 import { endPoint } from "../../../utils/endpoint";
+import { Data, Query } from "../../../components/autocomplete-handler";
 
 export class QueryUserDto extends PaginatedQueryDto {
   username?: string;
@@ -71,6 +72,19 @@ export const changePasswordUserAsync =
   () => {
     axiosInstance
       .post<User>(endPoint("user", "change-password"), data)
+      .then(({ data }) => {
+        success(data);
+      })
+      .catch(fail);
+  };
+
+export const getUsersAutocompleteAsync =
+  (query: Query, success: (data: Data<User>) => void, fail: () => void) =>
+  () => {
+    axiosInstance
+      .get<Data<User>>(endPoint("task", "all"), {
+        params: { title: query.search, page: query?.page },
+      })
       .then(({ data }) => {
         success(data);
       })
