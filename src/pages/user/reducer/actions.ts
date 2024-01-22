@@ -1,10 +1,10 @@
 import { axiosInstance } from "../../../app/axios";
 import { AppDispatch } from "../../../app/store";
-import { Endpoint } from "../../../constants/endpoints";
 import { Role } from "../../../constants/roles";
 import { PaginatedQueryDto } from "../../../common/dto/paginated-query.dto";
 import { actions, User, UserChangePassword } from "./slice";
 import { PaginatedResultsDto } from "../../../common/dto/paginated-result.dto";
+import { endPoint } from "../../../utils/endpoint";
 
 export class QueryUserDto extends PaginatedQueryDto {
   username?: string;
@@ -22,7 +22,7 @@ export const getUsersAsync =
   ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .get<PaginatedResultsDto<User>>(Endpoint.user, { params: q })
+      .get<PaginatedResultsDto<User>>(endPoint("user"), { params: q })
       .then(({ data }) => {
         dispatch(actions.getUsers(data));
         success(data);
@@ -34,7 +34,7 @@ export const addUserAsync =
   (data: User, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .post<User>(Endpoint.user, data)
+      .post<User>(endPoint("user"), data)
       .then(({ data }) => {
         dispatch(actions.addUser(data));
         success(data);
@@ -46,7 +46,7 @@ export const editUserAsync =
   (data: User, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .patch<User>(Endpoint.user, data)
+      .patch<User>(endPoint("user"), data)
       .then(({ data }) => {
         dispatch(actions.editUser(data));
         success(data);
@@ -58,7 +58,7 @@ export const getUserAsync =
   (id: number, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .get<User>(`${Endpoint.user}/${id}`)
+      .get<User>(endPoint("user", id))
       .then(({ data }) => {
         dispatch(actions.getUser(data));
         success(data);
@@ -70,7 +70,7 @@ export const changePasswordUserAsync =
   (data: UserChangePassword, success: (data: User) => void, fail: () => void) =>
   () => {
     axiosInstance
-      .post<User>(Endpoint.user + Endpoint.change_password, data)
+      .post<User>(endPoint("user", "change-password"), data)
       .then(({ data }) => {
         success(data);
       })
