@@ -4,9 +4,10 @@ import Autocomplete from "../autocomplete/Autocomplete";
 import {
   AutocompleteChangeReason,
   AutocompleteRenderOptionState,
-  TextField,
+  TextFieldProps,
 } from "@mui/material";
 import { useAppDispatch } from "../../app/hooks";
+import { TextFieldHandler } from "../text-field-handler";
 
 export type Query = {
   search: string;
@@ -19,7 +20,7 @@ export type Data<T> = {
   meta: { total: number; currentPage: number; next: number };
 };
 
-type Props<T> = {
+export type AutocompleteHandlerProps<T extends any> = TextFieldProps & {
   getOptionLabel: (option: T) => string;
   renderOption: (option: T) => string;
   loadItemsAsync: (
@@ -38,7 +39,7 @@ type Props<T> = {
   freeSolo?: boolean;
 };
 
-function AutoCompleteHandler<T extends any>(props: Props<T>) {
+function AutoCompleteHandler<T>(props: AutocompleteHandlerProps<T>) {
   const {
     onChange = () => undefined,
     onChangeStr = () => undefined,
@@ -212,7 +213,7 @@ function AutoCompleteHandler<T extends any>(props: Props<T>) {
       clearOnBlur={justSelect}
       {...autocompleteProps}
       renderInput={(params) => (
-        <TextField
+        <TextFieldHandler
           {...params}
           {...otherProps}
           value={inputValue}

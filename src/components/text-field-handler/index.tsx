@@ -1,5 +1,5 @@
 import { TextField, TextFieldProps } from "@mui/material";
 
-function TextFieldHandler(props: TextFieldProps) {
+export function TextFieldHandler(props: TextFieldProps) {
   return <TextField {...props} />;
 }

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAppDispatch } from "../../app/hooks";
 import { getUsersAsync, getUsersAutocompleteAsync } from "./reducer/actions";
 import Autocomplete from "../../components/autocomplete-handler";
+import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
 
 function UserList() {
   const dispatch = useAppDispatch();
@@ -39,4 +40,4 @@ function UserList() {
   );
 }
 
-export default UserList;
+export default withAllowedRoles(UserList, ["ADMIN"]);

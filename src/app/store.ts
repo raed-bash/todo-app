@@ -1,7 +1,10 @@
 import { CaseReducer, PayloadAction, configureStore } from "@reduxjs/toolkit";
 import UserReducer from "../pages/user/reducer/slice";
+import AppReducer from "./slice";
 
-export const store = configureStore({ reducer: { user: UserReducer } });
+export const store = configureStore({
+  reducer: { app: AppReducer, user: UserReducer },
+});
 
 export type RootState = ReturnType<typeof store.getState>;
 
