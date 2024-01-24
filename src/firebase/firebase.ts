@@ -1,9 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import {
+  MessagePayload,
+  getMessaging,
+  getToken,
+  onMessage,
+} from "firebase/messaging";
 import firebaseConfig from "./firebase.config";
 
-initializeApp(firebaseConfig);
-const messaging = getMessaging();
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
 
 export function requestPermission() {
   Notification.requestPermission().then((permission) => {
@@ -28,7 +33,7 @@ export function requestPermission() {
 requestPermission();
 
 export const onMessageListener = () => {
-  return new Promise((reslove) => {
+  return new Promise((reslove: (payload: MessagePayload) => void) => {
     onMessage(messaging, (payload) => {
       console.log("Message Payload", payload);
       reslove(payload);

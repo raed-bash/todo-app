@@ -21,6 +21,9 @@ if ("undefined" === typeof window) {
   messaging.onBackgroundMessage(function (payload) {
     const notificationTitle = payload?.notification?.title;
     const notificationOptions = { body: payload?.notification?.body };
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(
+      notificationTitle,
+      notificationOptions
+    );
   });
 }

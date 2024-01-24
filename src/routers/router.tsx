@@ -10,6 +10,7 @@ import NotFound from "../pages/not-found";
 import { useAppSelector } from "../app/hooks";
 import Login from "../pages/login";
 import { Container } from "../container";
+import { HomeRouter } from "../pages/home/router";
 
 function CreateRoutes() {
   const isLogged = useAppSelector((state) => state.app?.isLogged);
@@ -23,7 +24,7 @@ function CreateRoutes() {
         {
           path: "/",
           element: isLogged ? <Layout /> : <Navigate to="/login" replace />,
-          children: [...UserRouter, ...TaskRouter],
+          children: [...HomeRouter, ...UserRouter, ...TaskRouter],
         },
         {
           path: "login",

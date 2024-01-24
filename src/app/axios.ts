@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { useCallback, useLayoutEffect } from "react";
 import { useAppDispatch } from "./hooks";
 import { actions } from "./slice";
+import { ToastOptions, TypeOptions, toast } from "react-toastify";
 const axiosInstance = axios.create({
   baseURL: "http://localhost:3001",
   headers: {
@@ -9,15 +10,29 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
+
 export function AxiosInterceptorProvider({
   children,
 }: {
   children: JSX.Element;
 }) {
   const dispatch = useAppDispatch();
+
   const handleResponse = useCallback(
     (response: AxiosResponse) => {
-      if (response.status === 401) dispatch(actions.logout());
+      const status = response.status;
+      let typeMessage: TypeOptions = "default";
+      if (status > 199 && status < 300) {
+        typeMessage = "success";
+      } else if (status > 299 && status < 400) {
+        typeMessage = "warning";
+      } else if (status > 399) {
+        typeMessage = "error";
+        if (status === 401) dispatch(actions.logout());
+      }
+      if (typeof response.data?.message === "string") {
+        showMessage(response?.data?.message, { type: typeMessage });
+      }
     },
     [dispatch]
   );
@@ -48,3 +63,11 @@ export function AxiosInterceptorProvider({
 }
 
 export { axiosInstance };
+
+function showMessage(message: string, options: ToastOptions) {
+  toast(message, {
+    containerId: "main",
+    type: "default",
+    ...options,
+  });
+}

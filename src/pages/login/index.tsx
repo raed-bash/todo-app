@@ -11,7 +11,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ButtonHandler } from "../../components/button-handler";
 import TextFieldMap, { Input } from "../../components/text-field-map";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { loginAsync } from "./reducer/actions";
 import { useAppDispatch } from "../../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,8 @@ function Copyright(props: any) {
 function Login() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const formik = useFormik({
     initialValues: { username: "", password: "" },
     validationSchema: Yup.object({
@@ -44,13 +46,17 @@ function Login() {
       password: Yup.string().min(8).required(),
     }),
     onSubmit: (values) => {
+      setLoading(true);
       dispatch(
         loginAsync(
           values,
           () => {
             navigate("/home");
+            setLoading(false);
           },
-          () => {}
+          () => {
+            setLoading(false);
+          }
         )
       );
     },
@@ -99,8 +105,9 @@ function Login() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </ButtonHandler>
         </Box>
       </Box>
