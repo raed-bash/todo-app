@@ -40,6 +40,7 @@ const AppSlice = createSlice({
       };
     },
     logout: (state) => {
+      TokenHelpers.removeToken();
       return {
         ...state,
         isLogged: false,

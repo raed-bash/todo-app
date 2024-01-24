@@ -19,6 +19,10 @@ export class TokenHelpers {
     localStorage.setItem(keyAccessToken, token);
   }
 
+  static removeToken() {
+    localStorage.removeItem(keyAccessToken);
+  }
+
   static decodedToken(token: string) {
     try {
       const base64Url = token.split(".")[1];
