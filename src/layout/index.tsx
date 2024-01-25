@@ -1,22 +1,25 @@
-import * as React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import MuiDrawer from "@mui/material/Drawer";
-import Box from "@mui/material/Box";
+import { useState } from "react";
+import { styled } from "@mui/material/styles";
+import {
+  CssBaseline,
+  Drawer,
+  Box,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  Badge,
+  Container,
+  Link,
+} from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Outlet, useLocation } from "react-router-dom";
 import { ListLinks } from "./list-links";
-import { Outlet } from "react-router-dom";
+import { PagesController } from "../constants/pages-conroller";
 
 function Copyright(props: any) {
   return (
@@ -27,10 +30,7 @@ function Copyright(props: any) {
       {...props}
     >
       {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Todo App
-      </Link>{" "}
-      {new Date().getFullYear()}
+      <Link color="inherit">Todo App</Link> {new Date().getFullYear()}
       {"."}
     </Typography>
   );
@@ -60,7 +60,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, {
+const DrawerStyled = styled(Drawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   "& .MuiDrawer-paper": {
@@ -86,91 +86,120 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
-
 export default function Layout() {
-  const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  const [isExpand, setIsExpand] = useState<boolean>(() =>
+    SideBarHelpers.getExpand()
+  );
+  const location = useLocation();
+  const toggleDrawer = () =>
+    setIsExpand((isExpand) => {
+      SideBarHelpers.setIsExpand(!isExpand);
+      return !isExpand;
+    });
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: "24px", // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: "36px",
-                ...(open && { display: "none" }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Dashboard
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            <ListLinks />
-            <Divider sx={{ my: 1 }} />
-          </List>
-        </Drawer>
-        <Box
-          component="main"
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="absolute" open={isExpand}>
+        <Toolbar
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
+            pr: "24px",
           }}
         >
-          <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Outlet />
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
-        </Box>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleDrawer}
+            sx={{
+              marginRight: "36px",
+              ...(isExpand && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{ flexGrow: 1 }}
+          >
+            {PagesController[location.pathname.slice(1)]?.title}
+          </Typography>
+          <IconButton color="inherit">
+            <Badge badgeContent={4} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <DrawerStyled variant="permanent" open={isExpand}>
+        <Toolbar
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            px: [1],
+          }}
+        >
+          <IconButton onClick={toggleDrawer}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </Toolbar>
+        <Divider />
+        <List component="nav">
+          <ListLinks />
+          <Divider sx={{ my: 1 }} />
+        </List>
+      </DrawerStyled>
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === "light"
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+          flexGrow: 1,
+          height: "100vh",
+          overflow: "auto",
+        }}
+      >
+        <Toolbar />
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Outlet />
+          <Copyright sx={{ pt: 4 }} />
+        </Container>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
+}
+
+const keyAccessIsExpand: string = "isExpand";
+class SideBarHelpers {
+  static Expand() {
+    localStorage.setItem(keyAccessIsExpand, "1");
+    return true;
+  }
+
+  static contract() {
+    localStorage.setItem(keyAccessIsExpand, "0");
+    return false;
+  }
+
+  static getExpand(): boolean {
+    const isExpand = localStorage.getItem(keyAccessIsExpand);
+
+    if (isExpand === "0") {
+      return false;
+    } else return true;
+  }
+
+  static setIsExpand(isExpand: boolean) {
+    if (isExpand) {
+      this.Expand();
+    } else {
+      this.contract();
+    }
+  }
 }

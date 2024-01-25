@@ -21,6 +21,7 @@ function CreateRoutes() {
       errorElement: <NotFound />,
       element: <Container />,
       children: [
+        { index: true, element: <Navigate to={`home`} replace /> },
         {
           path: "/",
           element: isLogged ? <Layout /> : <Navigate to="/login" replace />,

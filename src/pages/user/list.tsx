@@ -3,7 +3,10 @@ import { useAppDispatch } from "../../app/hooks";
 import { getUsersAsync, getUsersAutocompleteAsync } from "./reducer/actions";
 import Autocomplete from "../../components/autocomplete-handler";
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
+import { Role } from "../../constants/roles";
+import { PagesController } from "../../constants/pages-conroller";
 
+export const alllowedRolesUserPage: Role[] = ["ADMIN"];
 function UserList() {
   const dispatch = useAppDispatch();
   // const {} = useAppSelector((state) => state.user.items);
@@ -40,4 +43,4 @@ function UserList() {
   );
 }
 
-export default withAllowedRoles(UserList, ["ADMIN"]);
+export default withAllowedRoles(UserList, PagesController.user.roles);
