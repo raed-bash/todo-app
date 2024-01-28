@@ -4,12 +4,12 @@ type Meta = { total: number };
 
 type PayloadMeta = { data: Item[]; meta: Meta };
 
-type State = { items: Item[]; view: Item[]; total: number };
+type State = { items: Item[]; view: Item[]; meta: Meta };
 
 export class ReducersHelpers {
   static loadItems(state: State, { payload }: { payload: PayloadMeta }) {
     state.items = payload.data;
-    state.total = payload.meta.total;
+    state.meta = payload.meta;
   }
 
   static loadItem(state: State, { payload }: { payload: Item }) {
@@ -25,7 +25,7 @@ export class ReducersHelpers {
 
   static addItem(state: State, { payload }: { payload: Item }) {
     state?.items.unshift(payload);
-    state.total = state.total + 1;
+    state.meta.total = state.meta.total + 1;
   }
 
   static editItem(state: State, { payload }: { payload: Item }) {

@@ -1,6 +1,6 @@
 import { PaginatedQueryDto } from "./paginated-query.dto";
 
-class PaginatedMetadata {
+export class PaginatedMetadata {
   total!: number;
 
   lastPage!: number;
@@ -8,10 +8,6 @@ class PaginatedMetadata {
   currentPage!: number;
 
   perPage!: number;
-
-  prev!: number;
-
-  next!: number;
 }
 
 export class PaginatedResultsDto<T> {

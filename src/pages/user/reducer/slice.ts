@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { Role } from "../../../constants/roles";
 import { ReducersHelpers } from "../../../utils/reducers-helpers";
+import { PaginatedMetadata } from "../../../common/dto/paginated-result.dto";
 
 export class User {
   id!: number;
@@ -19,7 +20,7 @@ export class User {
 interface UserState {
   items: User[];
   view: User[];
-  total: number;
+  meta: PaginatedMetadata;
 }
 
 export type UserChangePassword = {
@@ -27,20 +28,16 @@ export type UserChangePassword = {
   password: string;
 };
 
-// type LocReducer<T> = Reducer<UserState, T>;
-
-const initialState: UserState = { items: [], view: [], total: 0 };
-
-// const getUsers: LocReducer<PaginatedResultsDto<User>> = (state, action) => {
-//   const { payload } = action;
-
-//   state.items = payload.data;
-//   state.total = payload.meta.total;
-// };
-
-// const getUser: LocReducer<User> = (state, action) => {
-//   const { payload } = action;
-// };
+const initialState: UserState = {
+  items: [],
+  view: [],
+  meta: {
+    total: 0,
+    currentPage: 1,
+    lastPage: 1,
+    perPage: 10,
+  },
+};
 
 const UserSlice = createSlice({
   name: "user",
