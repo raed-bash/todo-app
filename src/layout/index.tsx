@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
   CssBaseline,
@@ -12,14 +12,18 @@ import {
   Badge,
   Container,
   Link,
+  useTheme,
 } from "@mui/material";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Outlet, useLocation } from "react-router-dom";
 import { ListLinks } from "./list-links";
 import { PagesController } from "../constants/pages-controller";
+import { ThemeModeContext } from "../theme";
 
 function Copyright(props: any) {
   return (
@@ -90,6 +94,8 @@ export default function Layout() {
   const [isExpand, setIsExpand] = useState<boolean>(() =>
     SideBarHelpers.getExpand()
   );
+  const { toggleThemeMode } = useContext(ThemeModeContext);
+  const theme = useTheme();
   const location = useLocation();
   const toggleDrawer = () =>
     setIsExpand((isExpand) => {
@@ -127,11 +133,32 @@ export default function Layout() {
           >
             {PagesController[location.pathname.slice(1)]?.title}
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          <Box sx={{ display: "flex", columnGap: "10px" }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                columnGap: "5px",
+              }}
+            >
+              <Typography sx={{ textTransform: "capitalize" }}>
+                {theme.palette.mode}
+              </Typography>
+              <IconButton color="inherit" onClick={toggleThemeMode}>
+                {theme.palette.mode === "dark" ? (
+                  <Brightness4Icon />
+                ) : (
+                  <Brightness7Icon />
+                )}
+              </IconButton>
+            </Box>
+            <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
       <DrawerStyled variant="permanent" open={isExpand}>

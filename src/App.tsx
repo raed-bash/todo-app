@@ -3,7 +3,8 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import { AppRouter } from "./routers/router";
 import { toast } from "react-toastify";
-import { Box, Typography } from "@mui/material";
+import { Box, ThemeProvider, Typography } from "@mui/material";
+import { useTheme, ThemeModeContext } from "./theme";
 
 function App() {
   onMessageListener()
@@ -25,10 +26,15 @@ function App() {
     .catch((err) => {
       console.log(err);
     });
+  const [theme, themeMode] = useTheme();
 
   return (
     <Provider store={store}>
-      <AppRouter />
+      <ThemeModeContext.Provider value={themeMode}>
+        <ThemeProvider theme={theme}>
+          <AppRouter />
+        </ThemeProvider>
+      </ThemeModeContext.Provider>
     </Provider>
   );
 }
