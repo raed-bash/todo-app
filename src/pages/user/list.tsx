@@ -4,7 +4,7 @@ import { getUsersAsync, getUsersAutocompleteAsync } from "./reducer/actions";
 import Autocomplete from "../../components/autocomplete-handler";
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
 import { Role } from "../../constants/roles";
-import { PagesController } from "../../constants/pages-conroller";
+import { PagesController } from "../../constants/pages-controller";
 
 export const alllowedRolesUserPage: Role[] = ["ADMIN"];
 function UserList() {

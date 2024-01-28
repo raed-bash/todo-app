@@ -19,7 +19,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { Outlet, useLocation } from "react-router-dom";
 import { ListLinks } from "./list-links";
-import { PagesController } from "../constants/pages-conroller";
+import { PagesController } from "../constants/pages-controller";
 
 function Copyright(props: any) {
   return (

@@ -1,5 +1,5 @@
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
-import { PagesController } from "../../constants/pages-conroller";
+import { PagesController } from "../../constants/pages-controller";
 
 function TaskList() {
   return <h1>Task list</h1>;

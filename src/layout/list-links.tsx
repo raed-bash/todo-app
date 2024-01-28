@@ -12,7 +12,7 @@ import type { PathsWithSlash } from "../constants/paths";
 import {
   type PageControllerTypes,
   PagesController,
-} from "../constants/pages-conroller";
+} from "../constants/pages-controller";
 
 export const NavLiLink = styled(ListItem)(() => ({
   backgroundColor: "white",
