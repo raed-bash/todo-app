@@ -12,6 +12,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Box, Button, IconButton, MenuItem, Typography } from "@mui/material";
 import { TextFieldHandler } from "../../components/text-field-handler";
 import { Role } from "../../constants/roles";
+import { toCapitalize } from "../../utils/to-capitalize";
 
 const RoleOptions: { label: string; value?: Role }[] = [
   { label: "All" },
@@ -40,7 +41,13 @@ function UserList() {
   });
   const columns: GridColDef[] = [
     { headerName: "Username", field: "username", flex: 1, sortable: false },
-    { headerName: "Role", field: "role", flex: 1, sortable: false },
+    {
+      headerName: "Role",
+      field: "role",
+      flex: 1,
+      sortable: false,
+      valueGetter: ({ value }) => toCapitalize(value),
+    },
     {
       headerName: "Status",
       field: "locked",
