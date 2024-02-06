@@ -10,7 +10,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ButtonHandler } from "../../components/button-handler";
-import TextFieldMap, { Input } from "../../components/text-field-map";
+import TextFieldMap, {
+  type gridPropsWithInputProps,
+} from "../../components/text-field-map";
 import { useMemo, useState } from "react";
 import { loginAsync } from "./reducer/actions";
 import { useAppDispatch } from "../../app/hooks";
@@ -62,7 +64,7 @@ function Login() {
     },
   });
 
-  const Inputs = useMemo<Input[]>(
+  const Inputs = useMemo<gridPropsWithInputProps[]>(
     () => [
       { name: "username", label: "Username", autoFocus: true },
       {
