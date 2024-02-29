@@ -1,4 +1,4 @@
-import { Pagination } from "@mui/material";
+import { Box, Pagination } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 type Props = {
@@ -46,11 +46,14 @@ function Table(props: Props) {
       rows={rows}
       slots={{
         pagination: () => (
-          <Pagination
-            count={Math.ceil(total / perPage)}
-            onChange={(_, value) => onChangePage(value)}
-            defaultPage={defaultPage}
-          />
+          <Box sx={{ display: "flex", alignItems: "center", mx: 2 }}>
+            <Pagination
+              count={Math.ceil(total / perPage)}
+              onChange={(_, value) => onChangePage(value)}
+              defaultPage={defaultPage}
+            />
+            Total: {total}
+          </Box>
         ),
       }}
       initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
