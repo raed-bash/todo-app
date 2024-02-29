@@ -5,7 +5,7 @@ import {
   ListItem,
 } from "@mui/material";
 import { NavLinkProps, useLocation } from "react-router-dom";
-import { styled } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material";
 import { useAppSelector } from "../app/hooks";
 import NavLinkWrapper from "../components/nav-link-wrapper";
 import type { PathsWithSlash } from "../constants/paths";
@@ -40,8 +40,10 @@ export function ListLinks() {
 }
 
 function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
+  const theme = useTheme();
   const isEqualCurrentPathname = useIsEqualCurrentPathname();
   const isActive = isEqualCurrentPathname(to);
+  const isDarkMode = theme.palette.mode === "dark";
 
   return (
     <NavLiLink
@@ -58,13 +60,13 @@ function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
         <ListItemIcon>
           <Icon
             sx={{
-              color: isActive ? "#1976d2" : "#000",
+              color: isActive ? "#1976d2" : isDarkMode ? "#fff" : "#000",
             }}
           />
         </ListItemIcon>
         <ListItemText
           primary={title}
-          sx={{ color: isActive ? "#1976d2" : "#000" }}
+          sx={{ color: isActive ? "#1976d2" : isDarkMode ? "#fff" : "#000" }}
         />
       </ListItemButton>
     </NavLiLink>
