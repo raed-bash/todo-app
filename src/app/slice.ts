@@ -2,9 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Role } from "../constants/roles";
 import { TokenHelpers, PayloadToken } from "../utils/token-helpers";
 import { axiosInstance } from "./axios";
+import { type Notification } from "src/components/notifications/notification-item";
 
 class AppState extends PayloadToken {
   isLogged!: boolean;
+
+  notifications!: Notification[];
 }
 
 function setTokenToHeaders(token: string) {
@@ -20,6 +23,7 @@ const initialState = (): AppState => {
     isLogged: payload ? true : false,
     ...(payload ? payload : {}),
     roles: payload ? payload.roles : [],
+    notifications: [],
   };
 };
 
@@ -48,6 +52,12 @@ const AppSlice = createSlice({
         userId: undefined,
         username: undefined,
       };
+    },
+    getNotfications: (
+      state,
+      action: { payload: Notification[]; type: string }
+    ) => {
+      state.notifications = action.payload;
     },
   },
 });
