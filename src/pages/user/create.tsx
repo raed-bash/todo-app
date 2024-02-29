@@ -11,6 +11,8 @@ import { useAppDispatch } from "src/app/hooks";
 import { addUserAsync } from "./reducer/actions";
 import { User } from "./reducer/slice";
 import { useNavigate } from "react-router-dom";
+import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
+import { PagesController } from "src/constants/pages-controller";
 
 const RoleOptions: { label: string; value: Role }[] = [
   { label: "Admin", value: "ADMIN" },
@@ -87,7 +89,7 @@ function UserCreate() {
   );
 }
 
-export default UserCreate;
+export default withAllowedRoles(UserCreate, PagesController.user.roles);
 
 export class CreateUserDto implements Pick<User, "username" | "role"> {
   username!: string;

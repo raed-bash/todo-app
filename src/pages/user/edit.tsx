@@ -12,6 +12,8 @@ import { User } from "./reducer/slice";
 import { useNavigate, useParams } from "react-router-dom";
 import { pick } from "lodash";
 import ButtonEdit from "src/components/button-handler/button-edit";
+import { PagesController } from "src/constants/pages-controller";
+import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
 
 const RoleOptions: { label: string; value: Role }[] = [
   { label: "Admin", value: "ADMIN" },
@@ -111,7 +113,7 @@ function UserEdit() {
   );
 }
 
-export default UserEdit;
+export default withAllowedRoles(UserEdit, PagesController.user.roles);
 
 export class EditUserDto implements Pick<User, "username" | "role"> {
   username!: string;
