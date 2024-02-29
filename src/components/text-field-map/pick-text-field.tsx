@@ -1,14 +1,11 @@
-import { Skeleton, TextFieldProps, styled } from "@mui/material";
+import { TextFieldProps } from "@mui/material";
 import { TextFieldHandler } from "../text-field-handler";
 import AutocompleteHandler, {
   AutocompleteHandlerProps,
 } from "../autocomplete-handler";
 import { FormikProps } from "formik";
 import { getValuesFromStructure } from "../../utils/get-values-from-structure";
-
-export const StyledSkeleton = styled(Skeleton)(() => ({
-  transform: "scale(1)",
-}));
+import { StyledSkeleton } from "src/theme/skeleton-styled";
 
 function FormSkeleton({ textArea }: { textArea: Partial<Input> | undefined }) {
   if (textArea)
@@ -40,6 +37,7 @@ function PickTextField(props: Props) {
   const { type = "text", name = "", ...otherProps } = input;
 
   const errors = getValuesFromStructure(formik.errors, name);
+  const touched = getValuesFromStructure(formik.touched, name);
   const value = getValuesFromStructure(formik.values, name);
   if (loading)
     return (
@@ -54,8 +52,8 @@ function PickTextField(props: Props) {
     <Input
       fullWidth
       onChange={formik.handleChange}
-      helperText={errors}
-      error={Boolean(errors)}
+      helperText={touched && errors}
+      error={touched && Boolean(errors)}
       type={type}
       name={name}
       value={value || ""}

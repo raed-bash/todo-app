@@ -6,6 +6,8 @@ import { actions, User, UserChangePassword } from "./slice";
 import { PaginatedResultsDto } from "../../../common/dto/paginated-result.dto";
 import { endPoint } from "../../../utils/endpoint";
 import { Data, Query } from "../../../components/autocomplete-handler";
+import { CreateUserDto } from "../create";
+import { EditUserDto } from "../edit";
 
 export class QueryUserDto extends PaginatedQueryDto {
   username?: string;
@@ -32,7 +34,7 @@ export const getUsersAsync =
   };
 
 export const addUserAsync =
-  (data: User, success: (data: User) => void, fail: () => void) =>
+  (data: CreateUserDto, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
       .post<User>(endPoint("user"), data)
@@ -44,7 +46,7 @@ export const addUserAsync =
   };
 
 export const editUserAsync =
-  (data: User, success: (data: User) => void, fail: () => void) =>
+  (data: EditUserDto, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
       .patch<User>(endPoint("user"), data)
@@ -56,10 +58,10 @@ export const editUserAsync =
   };
 
 export const getUserAsync =
-  (id: number, success: (data: User) => void, fail: () => void) =>
+  (id: string, success: (data: User) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .get<User>(endPoint("user", id))
+      .get<User>(endPoint("user", +id))
       .then(({ data }) => {
         dispatch(actions.getUser(data));
         success(data);

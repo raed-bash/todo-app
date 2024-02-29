@@ -32,6 +32,10 @@ export function AxiosInterceptorProvider({
       }
       if (typeof response.data?.message === "string") {
         showMessage(response?.data?.message, { type: typeMessage });
+      } else if (Array.isArray(response.data?.message)) {
+        showMessage(response?.data?.message.join(", "), {
+          type: typeMessage,
+        });
       }
     },
     [dispatch]

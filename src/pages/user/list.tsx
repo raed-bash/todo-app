@@ -4,7 +4,7 @@ import { QueryUserDto, getUsersAsync } from "./reducer/actions";
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
 import { PagesController } from "../../constants/pages-controller";
 import Table from "../../components/table";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRowId } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import BlockIcon from "@mui/icons-material/Block";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
@@ -13,6 +13,7 @@ import { Box, Button, IconButton, MenuItem, Typography } from "@mui/material";
 import { TextFieldHandler } from "../../components/text-field-handler";
 import { Role } from "../../constants/roles";
 import { toCapitalize } from "../../utils/to-capitalize";
+import { useNavigate } from "react-router-dom";
 
 const RoleOptions: { label: string; value?: Role }[] = [
   { label: "All" },
@@ -27,6 +28,7 @@ const StatusOptions: { label: string; value?: "true" | "false" }[] = [
 ];
 
 function UserList() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const {
     meta: { total },
@@ -39,6 +41,27 @@ function UserList() {
     role: undefined,
     username: "",
   });
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      const name = e.target.name;
+      const value = e.target.value;
+      setQuery((prev) => ({ ...prev, [name]: value, page: 1 }));
+    },
+    []
+  );
+  const handleAdd = () => {
+    navigate("create");
+  };
+
+  const handleEdit = (id: GridRowId) => {
+    navigate(`edit/${id}`);
+  };
+
+  const handleView = (id: GridRowId) => {
+    navigate(`${id}`);
+  };
+
   const columns: GridColDef[] = [
     { headerName: "Username", field: "username", flex: 1, sortable: false },
     {
@@ -75,8 +98,8 @@ function UserList() {
       field: "actions",
       type: "actions",
       flex: 1,
-      getActions: () => [
-        <IconButton>
+      getActions: ({ id }) => [
+        <IconButton onClick={() => handleEdit(id)}>
           <EditIcon color="primary" />
         </IconButton>,
         <IconButton>
@@ -85,20 +108,13 @@ function UserList() {
         <IconButton>
           <BlockIcon color="error" />
         </IconButton>,
-        <IconButton>
+        <IconButton onClick={() => handleView(id)}>
           <VisibilityIcon color="primary" />
         </IconButton>,
       ],
     },
   ];
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      const name = e.target.name;
-      const value = e.target.value;
-      setQuery((prev) => ({ ...prev, [name]: value }));
-    },
-    []
-  );
+
   useEffect(() => {
     dispatch(
       getUsersAsync(
@@ -148,7 +164,7 @@ function UserList() {
             </MenuItem>
           ))}
         </TextFieldHandler>
-        <Button sx={{ width: "30vw" }} variant="contained">
+        <Button sx={{ width: "30vw" }} variant="contained" onClick={handleAdd}>
           Add
         </Button>
       </Box>
