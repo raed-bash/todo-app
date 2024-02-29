@@ -9,7 +9,6 @@ import {
   Typography,
   Divider,
   IconButton,
-  Badge,
   Container,
   Link,
   useTheme,
@@ -17,13 +16,13 @@ import {
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Outlet, useLocation } from "react-router-dom";
 import { ListLinks } from "./list-links";
 import { PagesController } from "../constants/pages-controller";
 import { ThemeModeContext } from "../theme";
+import NotificationsBox from "../components/notifications/notifications-box";
 
 function Copyright(props: any) {
   return (
@@ -153,11 +152,7 @@ export default function Layout() {
                 )}
               </IconButton>
             </Box>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <NotificationsBox />
           </Box>
         </Toolbar>
       </AppBar>
