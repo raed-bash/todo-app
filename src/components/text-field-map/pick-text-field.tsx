@@ -6,6 +6,7 @@ import AutocompleteHandler, {
 import { FormikProps } from "formik";
 import { getValuesFromStructure } from "../../utils/get-values-from-structure";
 import { StyledSkeleton } from "src/theme/skeleton-styled";
+import RadioHandler, { RadioProps } from "../radio-handler";
 
 function FormSkeleton({ textArea }: { textArea: Partial<Input> | undefined }) {
   if (textArea)
@@ -22,10 +23,16 @@ const INPUTS: Record<string, any> = {
   date: (props: TextFieldProps) => (
     <TextFieldHandler InputLabelProps={{ shrink: true }} fullWidth {...props} />
   ),
+  radio: (props: RadioProps) => <RadioHandler {...props} />,
 };
+
 export type Input =
   | TextFieldProps
-  | (AutocompleteHandlerProps<any> & { type: "autocomplete" });
+  | (AutocompleteHandlerProps<any> & { type: "autocomplete" })
+  | (RadioProps & {
+      multiline?: undefined;
+      rows?: number;
+    });
 
 type Props = {
   input: Input;
@@ -56,7 +63,7 @@ function PickTextField(props: Props) {
       error={touched && Boolean(errors)}
       type={type}
       name={name}
-      value={value || ""}
+      value={value ?? ""}
       {...otherProps}
     />
   );

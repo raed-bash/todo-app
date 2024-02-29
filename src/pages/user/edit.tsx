@@ -27,9 +27,10 @@ function UserEdit() {
 
   const formik = useFormik<EditUserDto>({
     initialValues: {
-      id: undefined,
+      id: null,
       username: "",
       role: "EMPLOYEE",
+      locked: null,
     },
     validationSchema: Yup.object({
       username: Yup.string().required(),
@@ -58,11 +59,11 @@ function UserEdit() {
           id,
           (user) => {
             setLoading(false);
-            Object.entries(pick(user, ["username", "id", "role"])).forEach(
-              ([key, value]) => {
-                formik.setFieldValue(key, value);
-              }
-            );
+            Object.entries(
+              pick(user, ["username", "id", "role", "locked"])
+            ).forEach(([key, value]) => {
+              formik.setFieldValue(key, value);
+            });
           },
           () => {}
         )
@@ -73,6 +74,7 @@ function UserEdit() {
 
   const Inputs: gridPropsWithInputProps[] = [
     { name: "username", label: "Username", autoFocus: true },
+
     {
       name: "role",
       type: "text",
@@ -83,6 +85,16 @@ function UserEdit() {
           {label}
         </MenuItem>
       )),
+    },
+    {
+      name: "locked",
+      label: "Status",
+      type: "radio",
+      radios: [
+        { label: "Active", value: false },
+        { label: "Blocked", value: true },
+      ],
+      boolean: true,
     },
   ];
 
@@ -106,5 +118,7 @@ export class EditUserDto implements Pick<User, "username" | "role"> {
 
   role!: "ADMIN" | "EMPLOYEE";
 
-  id?: number;
+  id!: number | null;
+
+  locked!: boolean | null;
 }
