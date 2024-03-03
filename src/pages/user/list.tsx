@@ -1,31 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { QueryUserDto, getUsersAsync } from "./reducer/actions";
+import { QueryUserDto, editUserAsync, getUsersAsync } from "./reducer/actions";
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
 import { PagesController } from "../../constants/pages-controller";
 import Table from "../../components/table";
 import { GridColDef, GridRowId } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
-import BlockIcon from "@mui/icons-material/Block";
+import HttpsIcon from "@mui/icons-material/Https";
+import NoEncryptionGmailerrorredIcon from "@mui/icons-material/NoEncryptionGmailerrorred";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, Button, IconButton, MenuItem, Typography } from "@mui/material";
-import { TextFieldHandler } from "../../components/text-field-handler";
-import { Role } from "../../constants/roles";
+import { IconButton, Typography, Box } from "@mui/material";
 import { toCapitalize } from "../../utils/to-capitalize";
 import { useNavigate } from "react-router-dom";
-
-const RoleOptions: { label: string; value?: Role }[] = [
-  { label: "All" },
-  { label: "Admin", value: "ADMIN" },
-  { label: "Employee", value: "EMPLOYEE" },
-];
-
-const StatusOptions: { label: string; value?: "true" | "false" }[] = [
-  { label: "All" },
-  { label: "Active", value: "false" },
-  { label: "Blocked", value: "true" },
-];
+import ChangePasswordModal from "./components/change-password-modal";
+import UserFilter from "./components/filter";
+import { User } from "./reducer/slice";
 
 function UserList() {
   const navigate = useNavigate();
@@ -34,6 +24,8 @@ function UserList() {
     meta: { total },
     items: users,
   } = useAppSelector((state) => state.user);
+  const [user, setUser] = useState<Partial<User>>({});
+  const [open, setOpen] = useState({ changePassword: false, delete: false });
   const [query, setQuery] = useState<QueryUserDto>({
     locked: undefined,
     page: 1,
@@ -50,6 +42,11 @@ function UserList() {
     },
     []
   );
+
+  const emptyUserObject = () => {
+    setUser({});
+  };
+
   const handleAdd = () => {
     navigate("create");
   };
@@ -62,8 +59,33 @@ function UserList() {
     navigate(`${id}`);
   };
 
+  const handleOpenChanagePasswordModal = (user: User) => {
+    setOpen((prev) => ({ ...prev, changePassword: true }));
+    setUser(user);
+  };
+
+  const handleCloseChangePasswordModal = () => {
+    setOpen((prev) => ({ ...prev, changePassword: false }));
+    emptyUserObject();
+  };
+
+  const handleStatusToggle = (user: User) => {
+    dispatch(
+      editUserAsync(
+        { id: user.id, locked: !user.locked },
+        () => {},
+        () => {}
+      )
+    );
+  };
+
   const columns: GridColDef[] = [
-    { headerName: "Username", field: "username", flex: 1, sortable: false },
+    {
+      headerName: "Username",
+      field: "username",
+      flex: 1,
+      sortable: false,
+    },
     {
       headerName: "Role",
       field: "role",
@@ -74,8 +96,20 @@ function UserList() {
     {
       headerName: "Status",
       field: "locked",
-      valueGetter: ({ value }) => (value ? "Blocked" : "Active"),
+      renderCell: ({ value }) => {
+        return (
+          <Box
+            sx={{ p: 0.5, px: 3, borderRadius: "5px" }}
+            bgcolor={value ? "error.main" : "success.main"}
+            color={"white"}
+            fontSize={"14px"}
+          >
+            {value ? "Locked" : "Active"}
+          </Box>
+        );
+      },
       flex: 1,
+
       sortable: false,
     },
     {
@@ -97,16 +131,21 @@ function UserList() {
       headerName: "Actions",
       field: "actions",
       type: "actions",
+      align: "right",
       flex: 1,
-      getActions: ({ id }) => [
+      getActions: ({ id, row }) => [
         <IconButton onClick={() => handleEdit(id)}>
           <EditIcon color="primary" />
         </IconButton>,
-        <IconButton>
+        <IconButton onClick={() => handleOpenChanagePasswordModal(row)}>
           <ChangeCircleIcon color="success" />
         </IconButton>,
-        <IconButton>
-          <BlockIcon color="error" />
+        <IconButton onClick={() => handleStatusToggle(row)}>
+          {row?.locked ? (
+            <HttpsIcon color="error" />
+          ) : (
+            <NoEncryptionGmailerrorredIcon color="success" />
+          )}
         </IconButton>,
         <IconButton onClick={() => handleView(id)}>
           <VisibilityIcon color="primary" />
@@ -128,46 +167,11 @@ function UserList() {
   return (
     <div>
       <Typography variant="h4">User List</Typography>
-      <Box sx={{ marginY: 2, display: "flex", columnGap: "10px" }}>
-        <TextFieldHandler
-          label="Search"
-          name="username"
-          value={query.username}
-          onChange={handleChange}
-          fullWidth
-        />
-        <TextFieldHandler
-          label="Role"
-          name="role"
-          onChange={handleChange}
-          value={query.role || ""}
-          fullWidth
-          select
-        >
-          {RoleOptions.map(({ label, value }) => (
-            <MenuItem key={label} value={value}>
-              {label}
-            </MenuItem>
-          ))}
-        </TextFieldHandler>
-        <TextFieldHandler
-          label="Status"
-          name="locked"
-          onChange={handleChange}
-          value={query.locked || ""}
-          fullWidth
-          select
-        >
-          {StatusOptions.map(({ label, value }) => (
-            <MenuItem key={label} value={value}>
-              {label}
-            </MenuItem>
-          ))}
-        </TextFieldHandler>
-        <Button sx={{ width: "30vw" }} variant="contained" onClick={handleAdd}>
-          Add
-        </Button>
-      </Box>
+      <UserFilter
+        handleAdd={handleAdd}
+        handleChange={handleChange}
+        query={query}
+      />
       <Table
         columns={columns}
         rows={users}
@@ -175,6 +179,11 @@ function UserList() {
         defaultPage={query.page}
         onChangePage={(page) => setQuery((prev) => ({ ...prev, page }))}
         perPage={query.perPage}
+      />
+      <ChangePasswordModal
+        open={open.changePassword}
+        handleClose={handleCloseChangePasswordModal}
+        user={user}
       />
     </div>
   );

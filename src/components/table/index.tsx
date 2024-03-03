@@ -1,5 +1,5 @@
 import { Box, Pagination } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, DataGridProps, GridColDef } from "@mui/x-data-grid";
 
 type Props = {
   readonly columns: GridColDef[];
@@ -28,7 +28,8 @@ type Props = {
    * @default 10
    */
   perPage?: number;
-};
+} & DataGridProps &
+  React.RefAttributes<HTMLDivElement>;
 
 function Table(props: Props) {
   const {
@@ -38,6 +39,7 @@ function Table(props: Props) {
     onChangePage = () => undefined,
     defaultPage,
     perPage = 10,
+    ...otherProps
   } = props;
 
   return (
@@ -59,6 +61,7 @@ function Table(props: Props) {
       initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
       disableColumnFilter
       disableColumnMenu
+      {...otherProps}
     />
   );
 }

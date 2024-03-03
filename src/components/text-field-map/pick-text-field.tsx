@@ -7,6 +7,7 @@ import { FormikProps } from "formik";
 import { getValuesFromStructure } from "../../utils/get-values-from-structure";
 import { StyledSkeleton } from "src/theme/skeleton-styled";
 import RadioHandler, { RadioProps } from "../radio-handler";
+import PasswordField from "../password-field/password-field";
 
 function FormSkeleton({ textArea }: { textArea: Partial<Input> | undefined }) {
   if (textArea)
@@ -24,6 +25,7 @@ const INPUTS: Record<string, any> = {
     <TextFieldHandler InputLabelProps={{ shrink: true }} fullWidth {...props} />
   ),
   radio: (props: RadioProps) => <RadioHandler {...props} />,
+  password: (props: TextFieldProps) => <PasswordField fullWidth {...props} />,
 };
 
 export type Input =

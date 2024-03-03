@@ -46,7 +46,11 @@ export const addUserAsync =
   };
 
 export const editUserAsync =
-  (data: EditUserDto, success: (data: User) => void, fail: () => void) =>
+  (
+    data: Partial<EditUserDto>,
+    success: (data: User) => void,
+    fail: () => void
+  ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
       .patch<User>(endPoint("user"), data)
