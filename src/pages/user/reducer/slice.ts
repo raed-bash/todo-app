@@ -12,9 +12,9 @@ export class User {
 
   locked!: boolean;
 
-  createdAt!: Date;
+  createdAt!: string;
 
-  updatedAt?: Date | null;
+  updatedAt?: string | null;
 }
 
 interface UserState {

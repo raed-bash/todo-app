@@ -19,7 +19,7 @@ function NotificationsBoxContainer({ children }: Props) {
     );
   }, [dispatch]);
 
-  return children && children(notifications);
+  return children && children(notifications.data);
 }
 
 export default NotificationsBoxContainer;

@@ -6,6 +6,8 @@ import {
   onMessage,
 } from "firebase/messaging";
 import firebaseConfig from "./firebase.config";
+import { axiosInstance } from "src/app/axios";
+import { endPoint } from "src/utils/endpoint";
 
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
@@ -18,7 +20,12 @@ export function requestPermission() {
       })
         .then((currentToken) => {
           if (currentToken) {
-            console.log("Client Token", currentToken);
+            axiosInstance
+              .post(endPoint("notification"), {
+                notificationToken: currentToken,
+              })
+              .then(() => {})
+              .catch((err) => {});
           } else {
             console.log("Failed to generate the app regitration token.");
           }
@@ -35,7 +42,6 @@ requestPermission();
 export const onMessageListener = () => {
   return new Promise((reslove: (payload: MessagePayload) => void) => {
     onMessage(messaging, (payload) => {
-      console.log("Message Payload", payload);
       reslove(payload);
     });
   });

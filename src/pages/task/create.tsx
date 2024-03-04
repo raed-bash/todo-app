@@ -11,14 +11,16 @@ import TextFieldMap, {
 } from "src/components/text-field-map";
 import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
 import { PagesController } from "src/constants/pages-controller";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function TaskCreate() {
+  const { userId: userIdStr } = useParams();
+  const userId = userIdStr ? parseInt(userIdStr) : undefined;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const formik = useFormik({
-    initialValues: { title: "" },
+    initialValues: { userId, title: "" },
     validationSchema: Yup.object({ title: Yup.string().min(3).required() }),
     onSubmit(values) {
       setLoadingSubmit(true);
@@ -72,4 +74,6 @@ export default withAllowedRoles(TaskCreate, PagesController.task.roles);
 
 export class CreateTaskDto implements Pick<Task, "title"> {
   title!: string;
+
+  userId?: number;
 }

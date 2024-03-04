@@ -18,6 +18,8 @@ export class QueryTaskDto extends PaginatedQueryDto {
   fromDate?: string;
 
   toDate?: string;
+
+  userId?: number;
 }
 
 export const getTasksAsync =
@@ -30,7 +32,11 @@ export const getTasksAsync =
   (dispatch: AppDispatch) => {
     axiosInstance
       .get<PaginatedResultsDto<Task>>(
-        deleted ? endPoint("task", "deleted") : endPoint("task"),
+        endPoint(
+          "task",
+          q.userId ? "all" : undefined,
+          deleted ? "deleted" : undefined
+        ),
         { params: q }
       )
       .then(({ data }) => {
@@ -44,7 +50,7 @@ export const addTaskAsync =
   (data: CreateTaskDto, success: (data: Task) => void, fail: () => void) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .post<Task>(endPoint("task"), data)
+      .post<Task>(endPoint("task", data.userId ? "all" : undefined), data)
       .then(({ data }) => {
         dispatch(actions.addTask(data));
         success(data);
@@ -60,7 +66,7 @@ export const editTaskAsync =
   ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .patch<Task>(endPoint("task"), data)
+      .patch<Task>(endPoint("task", data.userId ? "all" : undefined), data)
       .then(({ data }) => {
         dispatch(actions.editTask(data));
         success(data);
@@ -69,10 +75,14 @@ export const editTaskAsync =
   };
 
 export const getTaskAsync =
-  (id: string, success: (data: Task) => void, fail: () => void) =>
+  (
+    { id, userId }: { id: string; userId?: number },
+    success: (data: Task) => void,
+    fail: () => void
+  ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .get<Task>(endPoint("task", +id))
+      .get<Task>(endPoint("task", userId ? "all" : undefined, +id))
       .then(({ data }) => {
         dispatch(actions.getTask(data));
         success(data);
@@ -88,7 +98,10 @@ export const changeCompletedTaskAsync =
   ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .post<Task>(endPoint("task", "completed"), data)
+      .post<Task>(
+        endPoint("task", data.userId ? "all" : undefined, "completed"),
+        data
+      )
       .then(({ data }) => {
         dispatch(actions.editTask(data));
         success(data);
@@ -110,10 +123,14 @@ export const getUsersAutocompleteAsync =
   };
 
 export const deleteTaskAsync =
-  (id: string, success: (task: Task) => void, fail: () => void) =>
+  (
+    { id, userId }: { id: string; userId?: number },
+    success: (task: Task) => void,
+    fail: () => void
+  ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .delete<Task>(endPoint("task", +id))
+      .delete<Task>(endPoint("task", userId ? "all" : undefined, +id))
       .then(({ data }) => {
         dispatch(actions.deleteTask(data));
         success(data);

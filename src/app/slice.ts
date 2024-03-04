@@ -3,11 +3,12 @@ import { Role } from "../constants/roles";
 import { TokenHelpers, PayloadToken } from "../utils/token-helpers";
 import { axiosInstance } from "./axios";
 import { type Notification } from "src/components/notifications/notification-item";
+import { PaginatedResultsDto } from "src/common/dto/paginated-result.dto";
 
 class AppState extends PayloadToken {
   isLogged!: boolean;
 
-  notifications!: Notification[];
+  notifications!: PaginatedResultsDto<Notification>;
 }
 
 function setTokenToHeaders(token: string) {
@@ -23,7 +24,10 @@ const initialState = (): AppState => {
     isLogged: payload ? true : false,
     ...(payload ? payload : {}),
     roles: payload ? payload.roles : [],
-    notifications: [],
+    notifications: {
+      data: [],
+      meta: { currentPage: 1, lastPage: 1, perPage: 10, total: 0 },
+    },
   };
 };
 
@@ -55,7 +59,7 @@ const AppSlice = createSlice({
     },
     getNotfications: (
       state,
-      action: { payload: Notification[]; type: string }
+      action: { payload: PaginatedResultsDto<Notification>; type: string }
     ) => {
       state.notifications = action.payload;
     },

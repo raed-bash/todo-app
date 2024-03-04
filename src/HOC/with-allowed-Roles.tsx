@@ -3,7 +3,7 @@ import { Role } from "../constants/roles";
 import { useGuardPermission } from "../hooks/use-guard-permission";
 
 export function withAllowedRoles(
-  Component: () => JSX.Element,
+  Component: (props: any) => JSX.Element,
   allowedRoles: Role[],
   to: string = "/home"
 ) {

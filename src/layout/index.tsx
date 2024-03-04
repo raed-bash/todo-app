@@ -23,6 +23,8 @@ import { ListLinks } from "./list-links";
 import { PagesController } from "../constants/pages-controller";
 import { ThemeModeContext } from "../theme";
 import NotificationsBox from "../components/notifications/notifications-box";
+import { onMessageListener } from "src/firebase/firebase";
+import { toast } from "react-toastify";
 
 function Copyright(props: any) {
   return (
@@ -100,6 +102,23 @@ export default function Layout() {
     setIsExpand((isExpand) => {
       SideBarHelpers.setIsExpand(!isExpand);
       return !isExpand;
+    });
+
+  onMessageListener()
+    .then((payload) => {
+      const notification = payload.notification;
+      console.log(notification, "appppppppppppppppp");
+      toast.warn(
+        `${notification?.body} \n ${notification?.title}`,
+
+        {
+          containerId: "main",
+          type: "default",
+        }
+      );
+    })
+    .catch((err) => {
+      console.log(err);
     });
 
   return (

@@ -25,6 +25,7 @@ interface TaskState {
 export type TaskChangeCompleted = {
   id: number;
   completed: boolean;
+  userId?: number;
 };
 
 const initialState: TaskState = {

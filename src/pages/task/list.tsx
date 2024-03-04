@@ -12,7 +12,7 @@ import {
   getTasksAsync,
 } from "./reducer/actions";
 import TaskFilter from "./components/filter";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -22,6 +22,8 @@ import { handleToDate } from "src/utils/handle-to-date";
 
 function TaskList() {
   const dispatch = useAppDispatch();
+  const { userId: userIdStr } = useParams();
+  const userId = userIdStr ? parseInt(userIdStr) : undefined;
   const navigate = useNavigate();
   const [query, setQuery] = useState<QueryTaskDto>({
     title: "",
@@ -62,26 +64,29 @@ function TaskList() {
     (task: Task) => {
       dispatch(
         changeCompletedTaskAsync(
-          { completed: !task.completed, id: task.id },
+          { completed: !task.completed, id: task.id, userId },
           () => {},
           () => {}
         )
       );
     },
-    [dispatch]
+    [dispatch, userId]
   );
 
   const handleDelete = useCallback(
     (id: GridRowId) => {
       dispatch(
         deleteTaskAsync(
-          id.toString(),
+          {
+            id: id.toString(),
+            userId,
+          },
           () => {},
           () => {}
         )
       );
     },
-    [dispatch]
+    [dispatch, userId]
   );
 
   const handleView = useCallback(
@@ -178,12 +183,12 @@ function TaskList() {
     dispatch(
       getTasksAsync(
         currentTab === 1,
-        { ...query, fromDate, toDate },
+        { ...query, fromDate, toDate, userId },
         () => {},
         () => {}
       )
     );
-  }, [query, dispatch, currentTab]);
+  }, [query, dispatch, currentTab, userId]);
 
   return (
     <div>

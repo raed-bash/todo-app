@@ -17,11 +17,12 @@ import ButtonEdit from "src/components/button-handler/button-edit";
 function TaskEdit() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id, userId: userIdStr } = useParams();
+  const userId = userIdStr ? parseInt(userIdStr) : undefined;
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const formik = useFormik({
-    initialValues: { id: null, title: "", completed: null },
+    initialValues: { userId, id: null, title: "", completed: null },
     validationSchema: Yup.object({
       title: Yup.string().min(3).optional(),
       completed: Yup.boolean().optional(),
@@ -71,7 +72,7 @@ function TaskEdit() {
     if (id) {
       dispatch(
         getTaskAsync(
-          id,
+          { id, userId },
           (task) => {
             Object.entries(pick(task, ["completed", "title", "id"])).forEach(
               ([key, value]) => {
@@ -106,4 +107,6 @@ export class EditTaskDto implements Pick<Task, "title"> {
   title!: string;
 
   completed!: boolean | null;
+
+  userId?: number;
 }

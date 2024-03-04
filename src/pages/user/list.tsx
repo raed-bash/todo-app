@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import ChangePasswordModal from "./components/change-password-modal";
 import UserFilter from "./components/filter";
 import { User } from "./reducer/slice";
+import { Roles } from "src/constants/roles";
 
 function UserList() {
   const navigate = useNavigate();
@@ -147,9 +148,13 @@ function UserList() {
             <NoEncryptionGmailerrorredIcon color="success" />
           )}
         </IconButton>,
-        <IconButton onClick={() => handleView(id)}>
-          <VisibilityIcon color="primary" />
-        </IconButton>,
+        row.role !== Roles.ADMIN ? (
+          <IconButton onClick={() => handleView(id)}>
+            <VisibilityIcon color="primary" />
+          </IconButton>
+        ) : (
+          <></>
+        ),
       ],
     },
   ];
