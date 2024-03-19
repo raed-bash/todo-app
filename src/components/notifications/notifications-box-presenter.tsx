@@ -9,7 +9,10 @@ import {
   styled,
 } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import NotificationItem, { type Notification } from "./notification-item";
+import NotificationItem, {
+  NotificationIdUserId,
+  type Notification,
+} from "./notification-item";
 
 export const NotificatoinGridStyled = styled(Grid)(() => ({
   padding: "13.6px",
@@ -20,9 +23,17 @@ export const NotificatoinGridStyled = styled(Grid)(() => ({
 
 type Props = {
   notifications: Notification[];
-  totalUnread: number;
+  unseenTotal: number;
+  handleScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
+  handleReadNotification?: (props: NotificationIdUserId) => void;
 };
-function NotificationsBoxPresenter(props: Props) {
+
+function NotificationsBoxPresenter({
+  notifications,
+  unseenTotal,
+  handleReadNotification = () => {},
+  handleScroll = () => {},
+}: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(e.currentTarget);
@@ -30,13 +41,14 @@ function NotificationsBoxPresenter(props: Props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const open = Boolean(anchorEl);
   const id = anchorEl ? "simple-popover" : undefined;
 
   return (
     <Box>
       <IconButton color="inherit" aria-describedby={id} onClick={handleClick}>
-        <Badge badgeContent={props.totalUnread} color="secondary">
+        <Badge badgeContent={unseenTotal} color="secondary">
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -45,6 +57,11 @@ function NotificationsBoxPresenter(props: Props) {
         id={id}
         anchorEl={anchorEl}
         onClose={handleClose}
+        slotProps={{
+          paper: {
+            onScroll: handleScroll,
+          },
+        }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
       >
         <Box
@@ -59,10 +76,13 @@ function NotificationsBoxPresenter(props: Props) {
             <NotificatoinGridStyled item xs={12}>
               <Typography variant="h5">Notifications</Typography>
             </NotificatoinGridStyled>
-            {props.notifications.map((notification) => (
+            {notifications.map((notification) => (
               <NotificationItem
-                key={notification.id}
+                key={notification.notification.id}
                 notification={notification}
+                onClick={({ notificationId, userId }) =>
+                  handleReadNotification({ notificationId, userId })
+                }
               />
             ))}
           </Grid>

@@ -4,10 +4,17 @@ import NotificationsBoxPresenter from "./notifications-box-presenter";
 function NotificationsBox() {
   return (
     <NotificationsBoxContainer>
-      {(notifications) => (
+      {({
+        notifications,
+        handleReadNotification,
+        handleScroll,
+        unseenTotal,
+      }) => (
         <NotificationsBoxPresenter
           notifications={notifications}
-          totalUnread={notifications.length}
+          unseenTotal={unseenTotal}
+          handleReadNotification={handleReadNotification}
+          handleScroll={handleScroll}
         />
       )}
     </NotificationsBoxContainer>

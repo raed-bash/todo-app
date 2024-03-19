@@ -8,4 +8,5 @@ export enum Endpoint {
   "change-password",
   deleted,
   notification,
+  read,
 }
