@@ -26,6 +26,7 @@ yarn-error.log*
 # Configuration files
 .env
 .env.*
+*.env
 !.env.example
 
 /test.js

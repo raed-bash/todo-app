@@ -4,7 +4,7 @@ import { useAppDispatch } from "./hooks";
 import { actions } from "./slice";
 import { ToastOptions, TypeOptions, toast } from "react-toastify";
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: process.env.REACT_APP_API,
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
     "Content-Type": "application/json",
