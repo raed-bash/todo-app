@@ -9,4 +9,6 @@ export enum Endpoint {
   deleted,
   notification,
   read,
+  my,
+  token,
 }

@@ -22,7 +22,7 @@ export const getNotificationsAsync =
   ) =>
   (dispatch: AppDispatch) => {
     axiosInstance
-      .get<NotificationResponse>(endPoint("notification"), {
+      .get<NotificationResponse>(endPoint("notification", "my"), {
         params: { page: q.page },
       })
       .then(({ data }) => {

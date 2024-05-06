@@ -21,7 +21,7 @@ export function requestPermission() {
         .then((currentToken) => {
           if (currentToken) {
             axiosInstance
-              .post(endPoint("notification"), {
+              .post(endPoint("notification", "token"), {
                 notificationToken: currentToken,
               })
               .then(() => {})
