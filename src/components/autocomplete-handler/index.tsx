@@ -148,7 +148,7 @@ function AutoCompleteHandler<T>(props: AutocompleteHandlerProps<T>) {
 
   const handleGetOptionLabel = useCallback(
     (option: any) => option.loading || getOptionLabel(option),
-    [renderOption]
+    [getOptionLabel]
   );
 
   const handleChangeAutoComplete = useCallback(
