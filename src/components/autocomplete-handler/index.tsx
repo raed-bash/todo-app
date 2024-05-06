@@ -32,7 +32,7 @@ export type AutocompleteHandlerProps<T extends any> = TextFieldProps & {
   onChangeStr?: (value: string) => void;
   onClear?: (value: string) => void;
   dependencyList?: [];
-  defaultValue?: string;
+  defaultValue?: Object | string | null;
   disabled?: boolean;
   autocompleteProps?: {};
   justSelect?: boolean;
@@ -140,9 +140,14 @@ function AutoCompleteHandler<T>(props: AutocompleteHandlerProps<T>) {
       index: AutocompleteRenderOptionState
     ) => (
       <li {...props} key={index.index}>
-        {renderOption(option)}
+        {option?.loading || renderOption(option)}
       </li>
     ),
+    [renderOption]
+  );
+
+  const handleGetOptionLabel = useCallback(
+    (option: any) => option.loading || getOptionLabel(option),
     [renderOption]
   );
 
@@ -206,7 +211,7 @@ function AutoCompleteHandler<T>(props: AutocompleteHandlerProps<T>) {
       isOptionEqualToValue={handleIsOptionEqualToValue}
       value={defaultValue}
       renderOption={handleRenderOption}
-      getOptionLabel={getOptionLabel}
+      getOptionLabel={handleGetOptionLabel}
       onChange={handleChangeAutoComplete}
       freeSolo
       onBlur={handleBlur}
