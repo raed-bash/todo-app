@@ -1,15 +1,11 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import { NotificatoinGridStyled } from "./notifications-box-presenter";
+import { Notification } from "src/pages/notification/reducer/slice";
 
-export interface Notification {
+export interface NotificationWithUser {
   seen: boolean;
   userId: number;
-  notification: {
-    id: number;
-    title: string;
-    body: string;
-    createdAt: string;
-  };
+  notification: Notification;
 }
 
 export type NotificationIdUserId = {
@@ -18,7 +14,7 @@ export type NotificationIdUserId = {
 };
 
 type Props = {
-  notification: Notification;
+  notification: NotificationWithUser;
   onClick?: (props: NotificationIdUserId) => void;
 };
 function NotificationItem({ notification, onClick = () => {} }: Props) {
@@ -28,6 +24,7 @@ function NotificationItem({ notification, onClick = () => {} }: Props) {
   return (
     <NotificatoinGridStyled
       onClick={() =>
+        !notification.seen &&
         onClick({
           notificationId: notification.notification.id,
           userId: notification.userId,

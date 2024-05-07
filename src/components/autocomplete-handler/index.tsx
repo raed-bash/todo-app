@@ -12,7 +12,6 @@ import { TextFieldHandler } from "../text-field-handler";
 export type Query = {
   search: string;
   page: number;
-  moreData: boolean | undefined;
 };
 
 export type Data<T> = {
@@ -20,9 +19,12 @@ export type Data<T> = {
   meta: { total: number; currentPage: number; next: number };
 };
 
-export type AutocompleteHandlerProps<T extends any> = TextFieldProps & {
+export type AutocompleteHandlerProps<T extends any> = Omit<
+  TextFieldProps,
+  "onChange"
+> & {
   getOptionLabel: (option: T) => string;
-  renderOption: (option: T) => string;
+  renderOption: (option: T) => JSX.Element | string;
   loadItemsAsync: (
     query: Query,
     success: (data: Data<T>) => void,
@@ -31,7 +33,7 @@ export type AutocompleteHandlerProps<T extends any> = TextFieldProps & {
   onChange?: (value: T) => void;
   onChangeStr?: (value: string) => void;
   onClear?: (value: string) => void;
-  dependencyList?: [];
+  dependencyList?: any[];
   defaultValue?: Object | string | null;
   disabled?: boolean;
   autocompleteProps?: {};
@@ -84,7 +86,7 @@ function AutoCompleteHandler<T>(props: AutocompleteHandlerProps<T>) {
       setLoading(true);
       dispatch(
         loadItemsAsync(
-          { search, page, moreData },
+          { search, page },
           ({ data, meta: { currentPage, next, total } }) => {
             setOptions((prev: any[]) => {
               return [...(moreData ? prev : []), ...data];

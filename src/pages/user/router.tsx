@@ -7,7 +7,7 @@ import TaskList from "../task/list";
 import TaskCreate from "../task/create";
 import TaskEdit from "../task/edit";
 
-export const UserRouter: RouteObject[] = [
+export const UserRouter = [
   { path: "user", element: <UserList /> },
   { path: "user/create", element: <UserCreate /> },
   { path: "user/edit/:id", element: <UserEdit /> },
@@ -20,4 +20,4 @@ export const UserRouter: RouteObject[] = [
       { path: "edit/:id", element: <TaskEdit /> },
     ],
   },
-];
+] satisfies RouteObject[];

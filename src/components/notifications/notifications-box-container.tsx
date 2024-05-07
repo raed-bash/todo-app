@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Notification, NotificationIdUserId } from "./notification-item";
+import {
+  NotificationWithUser,
+  NotificationIdUserId,
+} from "./notification-item";
 import { useAppDispatch, useAppSelector } from "src/app/hooks";
 import { getNotificationsAsync, readNotificationAsync } from "src/app/actions";
 
@@ -10,7 +13,7 @@ type Props = {
     handleScroll,
     unseenTotal,
   }: {
-    notifications: Notification[];
+    notifications: NotificationWithUser[];
     handleScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
     unseenTotal: number;
     handleReadNotification: ({

@@ -4,11 +4,11 @@ import { AppDispatch } from "./store";
 import { actions } from "./slice";
 import {
   NotificationIdUserId,
-  type Notification,
+  type NotificationWithUser,
 } from "src/components/notifications/notification-item";
 import { PaginatedResultsDto } from "src/common/dto/paginated-result.dto";
 
-export type NotificationResponse = PaginatedResultsDto<Notification> & {
+export type NotificationResponse = PaginatedResultsDto<NotificationWithUser> & {
   extra: {
     unseenTotal: number;
   };

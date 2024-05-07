@@ -37,8 +37,6 @@ export function requestPermission() {
   });
 }
 
-requestPermission();
-
 export const onMessageListener = () => {
   return new Promise((reslove: (payload: MessagePayload) => void) => {
     onMessage(messaging, (payload) => {

@@ -11,7 +11,7 @@ import {
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationItem, {
   NotificationIdUserId,
-  type Notification,
+  type NotificationWithUser,
 } from "./notification-item";
 
 export const NotificatoinGridStyled = styled(Grid)(() => ({
@@ -22,7 +22,7 @@ export const NotificatoinGridStyled = styled(Grid)(() => ({
 }));
 
 type Props = {
-  notifications: Notification[];
+  notifications: NotificationWithUser[];
   unseenTotal: number;
   handleScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
   handleReadNotification?: (props: NotificationIdUserId) => void;

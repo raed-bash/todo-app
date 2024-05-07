@@ -10,6 +10,8 @@ import { CreateUserDto } from "../create";
 import { EditUserDto } from "../edit";
 
 export class QueryUserDto extends PaginatedQueryDto {
+  notificationId?: number;
+
   username?: string;
 
   locked?: boolean;

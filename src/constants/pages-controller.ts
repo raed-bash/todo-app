@@ -5,6 +5,7 @@ import { Role } from "./roles";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import TaskIcon from "@mui/icons-material/Task";
+import MessageIcon from "@mui/icons-material/Message";
 
 export type PageControllerTypes = {
   title: string;
@@ -19,6 +20,7 @@ type Pages = {
   readonly home: PageControllerTypes;
   readonly user: PageControllerTypes;
   readonly task: PageControllerTypes;
+  readonly notification: PageControllerTypes;
   readonly [index: string]: any;
 };
 
@@ -40,5 +42,11 @@ export const PagesController: Pages = Object.freeze({
     title: "Tasks",
     Icon: TaskIcon,
     roles: ["ADMIN", "EMPLOYEE"],
+  },
+  notification: {
+    to: "/notification",
+    title: "Notification",
+    Icon: MessageIcon,
+    roles: ["ADMIN"],
   },
 });

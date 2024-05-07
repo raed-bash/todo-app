@@ -12,13 +12,14 @@ import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { IconButton, Typography, Box } from "@mui/material";
 import { toCapitalize } from "../../utils/to-capitalize";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ChangePasswordModal from "./components/change-password-modal";
 import UserFilter from "./components/filter";
 import { User } from "./reducer/slice";
 import { Roles } from "src/constants/roles";
 
 function UserList() {
+  const { notificationId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const {
@@ -33,6 +34,7 @@ function UserList() {
     perPage: 10,
     role: undefined,
     username: "",
+    notificationId: notificationId ? parseInt(notificationId) : undefined,
   });
 
   const handleChange = useCallback(
@@ -49,15 +51,15 @@ function UserList() {
   };
 
   const handleAdd = () => {
-    navigate("create");
+    navigate("/user/create");
   };
 
   const handleEdit = (id: GridRowId) => {
-    navigate(`edit/${id}`);
+    navigate(`/user/edit/${id}`);
   };
 
   const handleView = (id: GridRowId) => {
-    navigate(`${id}`);
+    navigate(`/user/${id}`);
   };
 
   const handleOpenChanagePasswordModal = (user: User) => {
@@ -162,7 +164,7 @@ function UserList() {
   useEffect(() => {
     dispatch(
       getUsersAsync(
-        query,
+        { ...query },
         () => {},
         () => {}
       )

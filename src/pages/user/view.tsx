@@ -53,7 +53,7 @@ function UserView() {
         bgcolor="#e0e0e1"
         style={{
           padding: "10px",
-          borderRadius: "10px",
+          borderRadius: "5px",
           marginTop: "20px",
           marginBottom: "20px",
         }}

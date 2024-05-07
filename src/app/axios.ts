@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+const notificationRunning: Record<number, string> = {};
 export function AxiosInterceptorProvider({
   children,
 }: {
@@ -30,10 +30,31 @@ export function AxiosInterceptorProvider({
         typeMessage = "error";
         if (status === 401) dispatch(actions.logout());
       }
-      if (typeof response.data?.message === "string") {
+      const message = response.data?.message;
+
+      if (
+        typeof message === "string" &&
+        notificationRunning[status] !== message
+      ) {
+        notificationRunning[status] = message;
+
+        setTimeout(() => {
+          delete notificationRunning[status];
+        }, 1500);
+
         showMessage(response?.data?.message, { type: typeMessage });
-      } else if (Array.isArray(response.data?.message)) {
-        showMessage(response?.data?.message.join(", "), {
+      } else if (Array.isArray(message)) {
+        const joinnedMessage = message.join(", ");
+
+        if (notificationRunning[status] === joinnedMessage) return;
+
+        notificationRunning[status] = joinnedMessage;
+
+        setTimeout(() => {
+          delete notificationRunning[status];
+        }, 1500);
+
+        showMessage(joinnedMessage, {
           type: typeMessage,
         });
       }

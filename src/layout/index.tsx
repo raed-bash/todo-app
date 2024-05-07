@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
   CssBaseline,
@@ -23,8 +23,11 @@ import { ListLinks } from "./list-links";
 import { PagesController } from "../constants/pages-controller";
 import { ThemeModeContext } from "../theme";
 import NotificationsBox from "../components/notifications/notifications-box";
-import { onMessageListener } from "src/firebase/firebase";
+import { onMessageListener, requestPermission } from "src/firebase/firebase";
 import { toast } from "react-toastify";
+import LogoutButton from "src/components/button-handler/logout-button";
+import { useAppDispatch } from "src/app/hooks";
+import { actions } from "src/app/slice";
 
 function Copyright(props: any) {
   return (
@@ -92,6 +95,7 @@ const DrawerStyled = styled(Drawer, {
 }));
 
 export default function Layout() {
+  const dispatch = useAppDispatch();
   const [isExpand, setIsExpand] = useState<boolean>(() =>
     SideBarHelpers.getExpand()
   );
@@ -104,13 +108,22 @@ export default function Layout() {
       return !isExpand;
     });
 
+  const handleLogout = () => {
+    dispatch(actions.logout());
+  };
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
+
   onMessageListener()
     .then((payload) => {
       const notification = payload.notification;
-      console.log(notification, "appppppppppppppppp");
       toast.warn(
-        `${notification?.body} \n ${notification?.title}`,
-
+        <div>
+          <div>{notification?.title}</div>
+          <div>{notification?.body}</div>
+        </div>,
         {
           containerId: "main",
           type: "default",
@@ -193,6 +206,14 @@ export default function Layout() {
           <ListLinks />
           <Divider sx={{ my: 1 }} />
         </List>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <LogoutButton onClick={handleLogout} />
+        </Box>
       </DrawerStyled>
       <Box
         component="main"

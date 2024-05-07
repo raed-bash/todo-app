@@ -11,4 +11,5 @@ export enum Endpoint {
   read,
   my,
   token,
+  send,
 }

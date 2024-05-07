@@ -211,4 +211,4 @@ function TaskList() {
   );
 }
 
-export default withAllowedRoles(TaskList, PagesController.home.roles);
+export default withAllowedRoles(TaskList, PagesController.task.roles);

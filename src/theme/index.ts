@@ -7,12 +7,21 @@ const themeModeValue = {
 export const ThemeModeContext = createContext(themeModeValue);
 
 export const useTheme = (): [ThemeType, typeof themeModeValue] => {
-  const [mode, setMode] = useState<PaletteMode>("light");
+  const [mode, setMode] = useState<PaletteMode>(
+    localStorage.themeMode || "light"
+  );
 
   const themeMode = useMemo(
     () => ({
-      toggleThemeMode: () =>
-        setMode((prev) => (prev === "dark" ? "light" : "dark")),
+      toggleThemeMode: () => {
+        setMode((prev) => {
+          const newMode = prev === "dark" ? "light" : "dark";
+
+          localStorage.setItem("themeMode", newMode);
+
+          return newMode;
+        });
+      },
     }),
     []
   );

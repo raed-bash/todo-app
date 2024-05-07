@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
 import { PagesController } from "src/constants/pages-controller";
 
-const RoleOptions: { label: string; value: Role }[] = [
+export const RoleOptions: { label: string; value: Role }[] = [
   { label: "Admin", value: "ADMIN" },
   { label: "Employee", value: "EMPLOYEE" },
 ];

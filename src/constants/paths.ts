@@ -5,6 +5,8 @@ export enum Path {
   "user/view",
   "task/view",
   view,
+  notification,
+  "notification/view",
 }
 
 export type Paths = keyof typeof Path;
