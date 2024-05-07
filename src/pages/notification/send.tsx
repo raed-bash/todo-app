@@ -14,7 +14,7 @@ import { PagesController } from "src/constants/pages-controller";
 import { useNavigate } from "react-router-dom";
 import { Role } from "src/constants/roles";
 import { User } from "../user/reducer/slice";
-import { UsersFieldsArray } from "./components/users-fields-arrays";
+import UsersFieldsArray from "./components/users-fields-arrays";
 
 function NotificationSend() {
   const dispatch = useAppDispatch();

@@ -22,7 +22,7 @@ function UsersFieldsArray<T extends FormikProps<SendNotificationFormikValues>>({
     </>
   );
 }
-export default memo(UsersFieldsArray);
+export default memo(UsersFieldsArray) as typeof UsersFieldsArray;
 
 const UsersFieldMap = memo(function <
   T extends FormikProps<SendNotificationFormikValues>
