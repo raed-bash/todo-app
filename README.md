@@ -1,46 +1,162 @@
-# Getting Started with Create React App
+# Todo App 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description 
+This app will help you manage your employees' tasks, and it has two roles: `Admin` and `Employee`.
 
-## Available Scripts
+>Note: This link provides a service for the app [Todo Service](https://github.com/raed-bash/todo-service)
+---
+## Table of Contents
+- [Features](#Features)
+- [Installation](#Installation)
+  - [Todo App](#Todo-App-Installation)
+  - [Todo Service](#Todo-Service-Installation)
+- [Running the app](#Running-the-app)
+  - [Todo Service](#Running-the-Todo-Service)
+  - [Todo App](#Running-the-Todo-App)
+- [Login](#Login)
+---
+## Features
+- **Create tasks** for employees or for yourself as an admin
+- Change the user's role
+- Reset the user's password
+- Send messages to a specific user, or multiple users, or all users, or users with a specific role
+---
+## Installation
+### Prerequisites
+Make sure you have the following technologies installed:
+- [**Node.js**](https://nodejs.org/en/download/package-manager) Runtime Environment 
+- **npm** or **yarn** Package Managers 
+- **MySQL** Database
 
-In the project directory, you can run:
+>Note: When you install Node.js, npm will be installed along with it.
+#
+### Todo App Installation
+1. Clone the repo
+```bash
+$ git clone https://github.com/raed-bash/todo-app.git
+```
+ 2. Install dependencies
+ ```bash
+# Go to the project 
+$ cd todo-app
 
-### `npm start`
+# Start install
+$ npm install 
+# Or
+$ yarn install
+ ```
+#
+### Todo Service Installation 
+1. Clone the repo
+```bash
+$ git clone https://github.com/raed-bash/todo-service
+```
+2. Install dependencies 
+```bash
+# Go to the project 
+$ cd todo-service
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# Start Install
+$ npm install
+# Or
+$ yarn install
+```
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Running the app
 
-### `npm test`
+### MySQL Database
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you have a MySQL Shell, You can running this commands, Otherwise create todo Database.
 
-### `npm run build`
+```bash
+# Config with MySQL, -u username
+$ mysql -u root -p
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Create todo Database 
+mysql> CREATE DATABASE todo;
+```
+#
+### Running the Todo Service
+#### Make Configuration with MySQL server. 
+`Bash Terminal`
+```bash
+# Go to the project 
+$ cd todo-service
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Create .env file
+$ touch .env
+```
+`Command Line Interface (cmd)`
+```cmd
+> cd todo-service 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> cd.> .env
+```
+`PowerShell`
+```powershell
+> cd todo-service
 
-### `npm run eject`
+> New-Item .env
+```
+Inside the .env file
+```.env
+DATABASE_URL = mysql://yourUsername:yourPassword@localhost:3306/todo
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+PORT = Any port do you want # Default Port is 3001
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+DEFAULT_USERNAME = root # Any username do you want
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+DEFAULT_PASSWORD = password # Any password do you want 
+```
+Then run this command to generate database
+```bash
+$ npm run prisma:generate 
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Run this command to put seed to login into the project
+```bash 
+$ npx prisma db seed
+```
 
-## Learn More
+Now you are ready to run the todo service
+```bash
+$ npm run start:dev
+```
+### Running the Todo App
+#### Make Configuration with the server. 
+`Bash Terminal`
+```bash
+# Go to the project 
+$ cd todo-app
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Create .env file
+$ touch .env
+```
+`Command Line Interface (cmd)`
+```cmd
+> cd todo-app
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+> cd.> .env
+```
+`PowerShell`
+```powershell
+> cd todo-app
+
+> New-Item .env
+```
+Inside the .env file
+```.env
+REACT_APP_API = http://localhost:3001 # Put service port
+```
+Now you are ready to run the todo app
+```bash
+$ npm run start 
+```
+---
+## Login
+#### Login by root user you put it in todo service .env file
+```txt
+USERNAME = root
+PASSWORD = password
+```
