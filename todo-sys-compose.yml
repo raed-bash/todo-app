@@ -1,10 +1,7 @@
-version: "3.8"
 services:
   todo-app:
     image: raedbash/todo-app
     container_name: todo-app
-    env_file:
-      - ./todo-app/prod.env
     ports:
       - "8080:80"
     build:
@@ -12,19 +9,48 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - todo-service
+    environment:
+      - REACT_APP_API=http://todo-service:8082
 
   todo-service:
     image: raedbash/todo-service
     container_name: todo-service
     ports:
-      - "8082:8082"
+      - "8082:3001"
     build:
       context: ./todo-service
       dockerfile: Dockerfile
     depends_on:
-      - todo-mysql
-    env_file:
-      - ./todo-service/prod.env
+      todo-mysql:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=mysql://root:password@todo-mysql:3306/todo_service
+      - SECRET_KEY_JWT=MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCejfZq9q/22X8B
+        wxKm5UBTtD/Ny0DdYcEUT7XaDCzkSpDt+alJVJEaFYDby+1i3x9r6rd9+dlXn6GB
+        4kYnkIInAOv3hDhLK5zsu3pXRWNNgVlOA5Bv19mEv0GNFqJF8EsaYAtY48PmjrsY
+        r1x0jGU4E/j41nzrOPv3KO6Osgn5x4JTo8GxS0m/j8C9AdQAhCAvCBVqCr5Gf4o+
+        fDw6OmQXfUBCGmP1f8qB9UWWptRzJiAAfkdby0g2FcQl1zB681uxJ8RMkioj0dNj
+        pflP1BWW7GR+NQj49gCq/QTP8cO0ttrPz/dqMQCjc9p0LDsiDyp8EO/jDZPizTfC
+        /q/O6hT/AgMBAAECggEABQqxVk27p02XSiQnaj+p50on7aOi6RhQX2oBVZdhdJgD
+        4MiO4gRt1OfOE2ak1bKHXY7l2jf0TycXBY9Up/ZI+Xx3po2OWV5f9m/ShqjnSsUj
+        oHqcmiSF8nw/GawQAx8ffEC4upVxq9m/cvnurv/PwVyUsQIJ1IeIDOzrg3SQmnEs
+        i82JanYqsG8f7XoVt4TTXe9OX90s8QJP0weFUh2ZsInUhfPJN8n1nD1wnqaTLagl
+        gMiy40R858EJBU+PlmCee7aoHagoZRMippA8uj/e4/nT5v0MsB0D8pXREa4gZ8ko
+        8VE4DaBroVYmJrfoJg8FcghNyvX9hUKCeFdvG48ndQKBgQDMmoCsgbT97SklgGyg
+        Q4nNZKptnH5SKeWfTfOPPbaNqruppbWsrzDda/CBL9/l6XgLocUVrR0SS3JhabTL
+        IILF+ZNSS1cT39E6hJBFtuQBQhkUrj3QjNkvtBlufloHbRO5MpdKf9f5B9Hg6910
+        QEb4rVUyU+IkCnWfMqxBJJ5dFQKBgQDGYiy7VsaqVkAODJ6SWNj/eJ8XtlAV3rCw
+        TDGLo2kYF30aqjIZp3rI/rJpBR0dWFwWR00arIij9khnP/aR6WtuJksEx5aMnMK4
+        56PkngtQFJSguhGbFf3DKTGA8tYmRWOt+Q4aEE80GUEQz6CLhTthKCPvxPXgLKhc
+        f+wIZTv2wwKBgD3Ak/182GebYMPU0vQ77idzroyOowGha5B9MnmVIrf3Q9ScEw0f
+        gxwRK/GRxX3azUSVeqpkKVYQN2F3Sf3UviOKhBBedNWmw7tprzGbVY2bqX44aKe9
+        Gv/u144lzH5ZSY6n2km99C1RUuMTzS79B26ewgwCjUpbbcyyupKevr1RAoGBAIIl
+        Edds3DQPFUKiQL0dkG44wZYawns2do+RzMcg0uc9MZN2qBtwZfrKLFz9P9Zqiy8K
+        Y6jmG1YFUgZ6TdX3XcULVheyoC9q/8uyGzD2BdHpToAK0VX+nVWVBqbjqF2/E9+k
+        Df5HSM6S6r6Ol3IwW34niTvY6LzCT0kvmrb/QtFlAoGBAKmM5f9J4ZnSCCMGvYYw
+        EdMsxrjItVQpAby/0GTzzWR6EbfRqR9RK3+qur7BdLrjIWi8Ie+su7MuaT/9+nD8
+        XQkbiAS6+x0Z1tdMGIst24WJyNEhTk+kIvs1ccnclMd+2ktVejlqoyltVm/RrLIg
+        Rf6uAbDMXxczfsH6GCeyztBu
 
   todo-mysql:
     image: mysql:8.2
@@ -33,7 +59,7 @@ services:
       - MYSQL_DATABASE=todo_service
       - MYSQL_ROOT_PASSWORD=password
     volumes:
-      - /opt/todo/todo_mysql:/var/lib/mysql
+      - C:/todo/todo_mysql:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
