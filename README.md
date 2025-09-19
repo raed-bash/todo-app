@@ -218,7 +218,7 @@ USERNAME = root
 PASSWORD = password
 ```
 
-### Runnnig Docker Containers
+### Runnig Docker Containers
 
 #### Run this commmand to pull the images and start the all system containers
 
