@@ -1,7 +1,7 @@
 # Dockerfile
 
 # Use Node Iron (lts 20.x.x) to build the image
-FROM node:iron-alpine as build-stage
+FROM node:iron-alpine AS build-stage
 
 WORKDIR /app
 
