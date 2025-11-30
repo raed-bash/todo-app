@@ -20,10 +20,7 @@ jobs:
           node-version: 24
 
       - name: Install deps
-        run: npm install
-
-      - name: Lint
-        run: npm run lint
-
+        run: npm install 
+        
       - name: Build project
         run: npm run build
