@@ -2,30 +2,29 @@ import React, { useState } from "react";
 import {
   Badge,
   Box,
-  Grid,
+  Button,
+  Chip,
   IconButton,
   Popover,
+  Tab,
+  Tabs,
+  Tooltip,
   Typography,
-  styled,
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsIcon from "@mui/icons-material/NotificationsOutlined";
+import NotificationsOffIcon from "@mui/icons-material/NotificationsOffOutlined";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 import NotificationItem, {
   NotificationIdUserId,
   type NotificationWithUser,
 } from "./notification-item";
-
-export const NotificatoinGridStyled = styled(Grid)(() => ({
-  padding: "13.6px",
-  borderBottomStyle: "solid",
-  borderBottomWidth: "2px",
-  borderBottomColor: "#a0a0a0",
-}));
 
 type Props = {
   notifications: NotificationWithUser[];
   unseenTotal: number;
   handleScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
   handleReadNotification?: (props: NotificationIdUserId) => void;
+  handleReadAll?: () => void;
 };
 
 function NotificationsBoxPresenter({
@@ -33,59 +32,121 @@ function NotificationsBoxPresenter({
   unseenTotal,
   handleReadNotification = () => {},
   handleScroll = () => {},
+  handleReadAll = () => {},
 }: Props) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+  const [tab, setTab] = useState<"all" | "unread">("all");
   const open = Boolean(anchorEl);
-  const id = anchorEl ? "simple-popover" : undefined;
+  const id = open ? "notifications-popover" : undefined;
+  // shortcut: "Unread" filters the pages already loaded, not the whole history.
+  const shown =
+    tab === "unread" ? notifications.filter((n) => !n.seen) : notifications;
 
   return (
     <Box>
-      <IconButton color="inherit" aria-describedby={id} onClick={handleClick}>
-        <Badge badgeContent={unseenTotal} color="secondary">
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
+      <Tooltip title="Notifications">
+        <IconButton
+          color="inherit"
+          aria-describedby={id}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        >
+          <Badge badgeContent={unseenTotal} color="error" max={99}>
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+      </Tooltip>
       <Popover
         open={open}
         id={id}
         anchorEl={anchorEl}
-        onClose={handleClose}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
         slotProps={{
           paper: {
-            onScroll: handleScroll,
+            sx: {
+              mt: 1,
+              width: 380,
+              maxWidth: "calc(100vw - 32px)",
+              display: "flex",
+              flexDirection: "column",
+            },
           },
         }}
-        anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
       >
         <Box
           sx={{
-            minHeight: "30vh",
-            maxHeight: "60vh",
-            minWidth: "20vw",
-            maxWidth: "27vw",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            px: 2,
+            pt: 1.5,
           }}
         >
-          <Grid container spacing={0}>
-            <NotificatoinGridStyled item xs={12}>
-              <Typography variant="h5">Notifications</Typography>
-            </NotificatoinGridStyled>
-            {notifications.map((notification) => (
+          <Typography variant="subtitle1" sx={{ flex: 1 }}>
+            Notifications
+          </Typography>
+          {unseenTotal > 0 && (
+            <Chip size="small" color="primary" label={`${unseenTotal} new`} />
+          )}
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 1,
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+        >
+          <Tabs
+            value={tab}
+            onChange={(_, value) => setTab(value)}
+            sx={{ flex: 1, minHeight: 40, "& .MuiTab-root": { minHeight: 40 } }}
+          >
+            <Tab value="all" label="All" />
+            <Tab value="unread" label="Unread" />
+          </Tabs>
+          <Button
+            size="small"
+            startIcon={<DoneAllIcon />}
+            onClick={handleReadAll}
+            disabled={unseenTotal === 0}
+          >
+            Mark all read
+          </Button>
+        </Box>
+        <Box
+          onScroll={handleScroll}
+          sx={{ maxHeight: "60vh", overflowY: "auto" }}
+        >
+          {shown.length === 0 ? (
+            <Box
+              sx={{
+                py: 6,
+                px: 2,
+                textAlign: "center",
+                color: "text.secondary",
+              }}
+            >
+              <NotificationsOffIcon
+                sx={{ fontSize: 40, mb: 1, opacity: 0.6 }}
+              />
+              <Typography variant="body2">
+                {tab === "unread"
+                  ? "You're all caught up"
+                  : "No notifications yet"}
+              </Typography>
+            </Box>
+          ) : (
+            shown.map((notification) => (
               <NotificationItem
                 key={notification.notification.id}
                 notification={notification}
-                onClick={({ notificationId, userId }) =>
-                  handleReadNotification({ notificationId, userId })
-                }
+                onClick={handleReadNotification}
               />
-            ))}
-          </Grid>
+            ))
+          )}
         </Box>
       </Popover>
     </Box>

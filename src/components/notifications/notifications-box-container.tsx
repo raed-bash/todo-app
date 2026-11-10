@@ -4,7 +4,11 @@ import {
   NotificationIdUserId,
 } from "./notification-item";
 import { useAppDispatch, useAppSelector } from "src/app/hooks";
-import { getNotificationsAsync, readNotificationAsync } from "src/app/actions";
+import {
+  getNotificationsAsync,
+  readAllNotificationsAsync,
+  readNotificationAsync,
+} from "src/app/actions";
 
 type Props = {
   children: ({
@@ -12,10 +16,12 @@ type Props = {
     handleReadNotification,
     handleScroll,
     unseenTotal,
+    handleReadAll,
   }: {
     notifications: NotificationWithUser[];
     handleScroll?: (e: React.UIEvent<HTMLDivElement, UIEvent>) => void;
     unseenTotal: number;
+    handleReadAll: () => void;
     handleReadNotification: ({
       notificationId,
       userId,
@@ -71,6 +77,7 @@ function NotificationsBoxContainer({ children }: Props) {
       handleReadNotification,
       handleScroll,
       unseenTotal,
+      handleReadAll: () => dispatch(readAllNotificationsAsync()),
     })
   );
 }

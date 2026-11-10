@@ -45,3 +45,10 @@ export const readNotificationAsync =
       })
       .catch(fail);
   };
+
+export const readAllNotificationsAsync = () => (dispatch: AppDispatch) => {
+  axiosInstance
+    .post(endPoint("notification", "read-all"))
+    .then(() => dispatch(actions.readAllNotifications()))
+    .catch(() => {});
+};

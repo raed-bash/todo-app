@@ -90,12 +90,18 @@ const AppSlice = createSlice({
         ({ notification }) => notification.id === notificationId
       );
       const notifications = state.notifications.data;
+      if (notificationIndex === -1 || notifications[notificationIndex].seen)
+        return;
       notifications[notificationIndex] = {
         ...notifications[notificationIndex],
         seen: true,
       };
 
       state.notifications.extra.unseenTotal -= 1;
+    },
+    readAllNotifications: (state) => {
+      state.notifications.data.forEach((item) => (item.seen = true));
+      state.notifications.extra.unseenTotal = 0;
     },
   },
 });

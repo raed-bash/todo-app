@@ -9,12 +9,14 @@ function NotificationsBox() {
         handleReadNotification,
         handleScroll,
         unseenTotal,
+        handleReadAll,
       }) => (
         <NotificationsBoxPresenter
           notifications={notifications}
           unseenTotal={unseenTotal}
           handleReadNotification={handleReadNotification}
           handleScroll={handleScroll}
+          handleReadAll={handleReadAll}
         />
       )}
     </NotificationsBoxContainer>

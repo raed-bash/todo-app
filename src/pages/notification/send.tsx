@@ -1,4 +1,7 @@
-import { Box, Grid, MenuItem, Typography } from "@mui/material";
+import { Box, Divider, Grid, MenuItem, Paper, Typography } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import GroupsIcon from "@mui/icons-material/Groups";
+import NotificationItem from "src/components/notifications/notification-item";
 import { FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
@@ -59,7 +62,7 @@ function NotificationSend() {
     },
   });
 
-  const Inputs: gridPropsWithInputProps[] = [
+  const MessageInputs: gridPropsWithInputProps[] = [
     {
       name: "title",
       label: "Title",
@@ -67,10 +70,13 @@ function NotificationSend() {
     },
     {
       name: "body",
-      label: "Body",
+      label: "Message",
       multiline: true,
-      minRows: 2,
+      minRows: 4,
     },
+  ];
+
+  const AudienceInputs: gridPropsWithInputProps[] = [
     {
       name: "role",
       type: "text",
@@ -84,38 +90,88 @@ function NotificationSend() {
     },
   ];
 
+  const selectedUsers = formik.values.users.filter((user) => user?.id).length;
+  const audience = selectedUsers
+    ? `${selectedUsers} selected user${selectedUsers > 1 ? "s" : ""}`
+    : formik.values.role === "ALL"
+      ? "Everyone"
+      : `All ${formik.values.role.toLowerCase()}s`;
+
   return (
-    <Box
-      component="form"
-      onSubmit={formik.handleSubmit}
-      noValidate
-      sx={{ mt: 7 }}
-    >
-      <Typography variant="h5" mb={2}>
-        Send Notification
+    <Box component="form" onSubmit={formik.handleSubmit} noValidate>
+      <Typography variant="h4">Send Notification</Typography>
+      <Typography color="text.secondary" sx={{ mb: 3 }}>
+        Write a message and choose who receives it.
       </Typography>
       <FormikProvider value={formik}>
-        <Grid container rowSpacing={3}>
-          <Grid item xs={12}>
-            <TextFieldMap Inputs={Inputs} formik={formik} />
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={7}>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                Message
+              </Typography>
+              <TextFieldMap Inputs={MessageInputs} formik={formik} />
+              <Divider sx={{ my: 3 }} />
+              <Typography variant="subtitle1">Audience</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Send to a role, or pick specific users (picking users overrides
+                the role).
+              </Typography>
+              <TextFieldMap Inputs={AudienceInputs} formik={formik} />
+              <Box sx={{ mt: 3 }}>
+                <UsersFieldsArray<typeof formik> formik={formik} />
+              </Box>
+            </Paper>
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="body2">Selecting Users:</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <UsersFieldsArray<typeof formik> formik={formik} />
+          <Grid item xs={12} md={5}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 3,
+                borderRadius: 2,
+                position: { md: "sticky" },
+                top: 88,
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                Preview
+              </Typography>
+              <Paper variant="outlined" sx={{ overflow: "hidden", mb: 2 }}>
+                <NotificationItem
+                  notification={{
+                    seen: false,
+                    userId: 0,
+                    notification: {
+                      id: 0,
+                      title: formik.values.title || "Notification title",
+                      body: formik.values.body || "Your message appears here.",
+                      createdAt: new Date().toISOString(),
+                    } as Notification,
+                  }}
+                />
+              </Paper>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              >
+                <GroupsIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  Goes to: <b>{audience}</b>
+                </Typography>
+              </Box>
+              <ButtonHandler
+                type="submit"
+                fullWidth
+                variant="contained"
+                size="large"
+                startIcon={<SendIcon />}
+                disabled={loadingSubmit}
+              >
+                {loadingSubmit ? "Sending..." : "Send notification"}
+              </ButtonHandler>
+            </Paper>
           </Grid>
         </Grid>
       </FormikProvider>
-      <ButtonHandler
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-        disabled={loadingSubmit}
-      >
-        {loadingSubmit ? "Sending..." : "Send"}
-      </ButtonHandler>
     </Box>
   );
 }

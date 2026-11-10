@@ -25,7 +25,7 @@ function UsersFieldsArray<T extends FormikProps<SendNotificationFormikValues>>({
 export default memo(UsersFieldsArray) as typeof UsersFieldsArray;
 
 const UsersFieldMap = memo(function <
-  T extends FormikProps<SendNotificationFormikValues>
+  T extends FormikProps<SendNotificationFormikValues>,
 >({
   formik,
   arrayHelpers,
@@ -57,7 +57,7 @@ const UsersFieldMap = memo(function <
     <Grid container spacing={3}>
       {usersValues.map((user, i) => {
         return (
-          <Grid key={i} item xs={6}>
+          <Grid key={i} item xs={12} sm={6}>
             <AutocompleteHandler<User>
               name={`users[${i}]`}
               label={`User (${i + 1})`}

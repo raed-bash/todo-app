@@ -1,4 +1,5 @@
-import { Box, Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { memo } from "react";
 import {
   QueryNotificationDto,
@@ -19,7 +20,10 @@ function TaskFilter(props: Props) {
   const { handleAdd, handleChange, query } = props;
 
   return (
-    <Box sx={{ marginY: 2, display: "flex", columnGap: "10px" }}>
+    <Paper
+      variant="outlined"
+      sx={{ p: 2, my: 2, borderRadius: 2, display: "flex", columnGap: "10px" }}
+    >
       <AutocompleteHandler<User>
         name="user"
         label="User"
@@ -68,10 +72,15 @@ function TaskFilter(props: Props) {
         fullWidth
         InputLabelProps={{ shrink: true }}
       />
-      <Button sx={{ width: "100%" }} variant="contained" onClick={handleAdd}>
-        Send New Notification
+      <Button
+        variant="contained"
+        onClick={handleAdd}
+        startIcon={<AddIcon />}
+        sx={{ flexShrink: 0, whiteSpace: "nowrap", px: 3 }}
+      >
+        Send new
       </Button>
-    </Box>
+    </Paper>
   );
 }
 
