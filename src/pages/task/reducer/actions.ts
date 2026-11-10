@@ -1,7 +1,7 @@
 import { axiosInstance } from "../../../app/axios";
 import { AppDispatch } from "../../../app/store";
 import { PaginatedQueryDto } from "../../../common/dto/paginated-query.dto";
-import { actions, Task, TaskChangeCompleted } from "./slice";
+import { actions, Priority, Task, TaskChangeCompleted } from "./slice";
 import { PaginatedResultsDto } from "../../../common/dto/paginated-result.dto";
 import { endPoint } from "../../../utils/endpoint";
 import { Data, Query } from "../../../components/autocomplete-handler";
@@ -15,11 +15,22 @@ export class QueryTaskDto extends PaginatedQueryDto {
 
   completed?: boolean;
 
+  priority?: Priority;
+
+  overdue?: boolean;
+
+  orderBy?: string;
+
+  orderDir?: "asc" | "desc";
+
   fromDate?: string;
 
   toDate?: string;
 
   userId?: number;
+
+  // admin: query every employee's tasks (userId then acts as an optional filter)
+  all?: boolean;
 }
 
 export const getTasksAsync =
@@ -30,14 +41,15 @@ export const getTasksAsync =
     fail: () => void
   ) =>
   (dispatch: AppDispatch) => {
+    const { all, ...params } = q;
     axiosInstance
       .get<PaginatedResultsDto<Task>>(
         endPoint(
           "task",
-          q.userId ? "all" : undefined,
+          all || q.userId ? "all" : undefined,
           deleted ? "deleted" : undefined
         ),
-        { params: q }
+        { params }
       )
       .then(({ data }) => {
         dispatch(actions.getTasks(data));
@@ -137,3 +149,45 @@ export const deleteTaskAsync =
       })
       .catch(fail);
   };
+
+export const restoreTaskAsync =
+  (
+    { id, userId }: { id: string; userId?: number },
+    success: (task: Task) => void,
+    fail: () => void
+  ) =>
+  (dispatch: AppDispatch) => {
+    axiosInstance
+      .post<Task>(endPoint("task", userId ? "all" : undefined, "restore", +id))
+      .then(({ data }) => {
+        dispatch(actions.deleteTask(data));
+        success(data);
+      })
+      .catch(fail);
+  };
+
+export type TaskStats = {
+  total: number;
+  completed: number;
+  open: number;
+  overdue: number;
+  deleted: number;
+  openByPriority: Record<Priority, number>;
+};
+
+export type StatsResponse = {
+  mine: TaskStats;
+  team?: TaskStats;
+  perUser?: {
+    id: number;
+    username: string;
+    total: number;
+    completed: number;
+    open: number;
+  }[];
+};
+
+export const getTaskStats = () =>
+  axiosInstance
+    .get<StatsResponse>(endPoint("task", "stats"))
+    .then((r) => r.data);

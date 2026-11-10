@@ -31,6 +31,11 @@ export class ReducersHelpers {
   static editItem(state: State, { payload }: { payload: Item }) {
     const itemId = payload?.id;
     const itemIndex = state.items.findIndex((item) => item.id === itemId);
-    if (itemIndex !== -1) return void (state.items[itemIndex] = payload);
+    // merge: single-item responses can carry fewer fields than list rows (e.g. a task's owner)
+    if (itemIndex !== -1)
+      return void (state.items[itemIndex] = {
+        ...state.items[itemIndex],
+        ...payload,
+      });
   }
 }

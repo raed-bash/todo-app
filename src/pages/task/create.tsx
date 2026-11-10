@@ -12,6 +12,11 @@ import TextFieldMap, {
 import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
 import { PagesController } from "src/constants/pages-controller";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  taskExtraInputs,
+  taskExtraSchema,
+  toTaskPayload,
+} from "./components/task-fields";
 
 function TaskCreate() {
   const { userId: userIdStr } = useParams();
@@ -20,13 +25,22 @@ function TaskCreate() {
   const navigate = useNavigate();
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const formik = useFormik({
-    initialValues: { userId, title: "" },
-    validationSchema: Yup.object({ title: Yup.string().min(3).required() }),
+    initialValues: {
+      userId,
+      title: "",
+      description: "",
+      priority: "MEDIUM" as Task["priority"],
+      dueDate: "",
+    },
+    validationSchema: Yup.object({
+      title: Yup.string().min(3).max(200).required(),
+      ...taskExtraSchema,
+    }),
     onSubmit(values) {
       setLoadingSubmit(true);
       dispatch(
         addTaskAsync(
-          values,
+          toTaskPayload(values),
           () => {
             setLoadingSubmit(false);
             navigate(-1);
@@ -47,6 +61,7 @@ function TaskCreate() {
       multiline: true,
       minRows: 2,
     },
+    ...taskExtraInputs,
   ];
 
   return (
@@ -74,6 +89,12 @@ export default withAllowedRoles(TaskCreate, PagesController.task.roles);
 
 export class CreateTaskDto implements Pick<Task, "title"> {
   title!: string;
+
+  description?: string;
+
+  priority?: Task["priority"];
+
+  dueDate?: string | null;
 
   userId?: number;
 }

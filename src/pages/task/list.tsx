@@ -1,17 +1,34 @@
-import { Box, Checkbox, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  IconButton,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { withAllowedRoles } from "../../HOC/with-allowed-Roles";
 import { PagesController } from "../../constants/pages-controller";
-import { GridColDef, GridRowId } from "@mui/x-data-grid";
+import { GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
 import Table from "src/components/table";
 import { useAppDispatch, useAppSelector } from "src/app/hooks";
 import {
-  QueryTaskDto,
   changeCompletedTaskAsync,
   deleteTaskAsync,
   getTasksAsync,
+  restoreTaskAsync,
 } from "./reducer/actions";
-import TaskFilter from "./components/filter";
+import RestoreIcon from "@mui/icons-material/RestoreFromTrash";
+import { formatDueDate, isOverdue } from "./task-dates";
+import { PriorityChip } from "./components/priority-chip";
+import TaskFilter, { TaskListQuery } from "./components/filter";
+import { axiosInstance } from "src/app/axios";
+import { endPoint } from "src/utils/endpoint";
+import { User } from "../user/reducer/slice";
+import { useGuardPermission } from "src/hooks/use-guard-permission";
 import { useNavigate, useParams } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,9 +42,19 @@ function TaskList() {
   const { userId: userIdStr } = useParams();
   const userId = userIdStr ? parseInt(userIdStr) : undefined;
   const navigate = useNavigate();
-  const [query, setQuery] = useState<QueryTaskDto>({
+  const isAdmin = useGuardPermission(["ADMIN"]);
+  // Admins on the main task page can switch from their own tasks to every employee's.
+  const canSeeAll = isAdmin && !userId;
+  const [scope, setScope] = useState<"mine" | "all">("mine");
+  const allScope = canSeeAll && scope === "all";
+  const [employees, setEmployees] = useState<User[]>([]);
+  const [selected, setSelected] = useState<GridRowSelectionModel>([]);
+  const [query, setQuery] = useState<TaskListQuery>({
     title: "",
-    completed: undefined,
+    status: "",
+    priority: undefined,
+    employeeId: "",
+    sort: "createdAt:desc",
     fromDate: undefined,
     toDate: undefined,
     page: 1,
@@ -52,51 +79,102 @@ function TaskList() {
     []
   );
 
+  // Whose task this is, when acting through the admin ("all") endpoints.
+  const ownerOf = useCallback(
+    (task: Task) => userId ?? (allScope ? task.user?.id : undefined),
+    [userId, allScope]
+  );
+
   const handleAdd = () => {
     navigate(`create`);
   };
 
-  const handleEdit = (id: GridRowId) => {
-    navigate(`edit/${id}`);
+  const handleEdit = (task: Task) => {
+    navigate(
+      allScope ? `/user/${task.user?.id}/edit/${task.id}` : `edit/${task.id}`
+    );
   };
 
   const handleCompletedToggle = useCallback(
-    (task: Task) => {
+    (task: Task, completed = !task.completed) => {
       dispatch(
         changeCompletedTaskAsync(
-          { completed: !task.completed, id: task.id, userId },
+          { completed, id: task.id, userId: ownerOf(task) },
           () => {},
           () => {}
         )
       );
     },
-    [dispatch, userId]
+    [dispatch, ownerOf]
   );
 
   const handleDelete = useCallback(
-    (id: GridRowId) => {
+    (task: Task) => {
       dispatch(
         deleteTaskAsync(
-          {
-            id: id.toString(),
-            userId,
-          },
+          { id: task.id.toString(), userId: ownerOf(task) },
           () => {},
           () => {}
         )
       );
     },
-    [dispatch, userId]
+    [dispatch, ownerOf]
   );
 
-  const handleView = useCallback(
-    (id: GridRowId) => {
-      navigate(id.toString());
+  const handleRestore = useCallback(
+    (task: Task) => {
+      dispatch(
+        restoreTaskAsync(
+          { id: task.id.toString(), userId: ownerOf(task) },
+          () => {},
+          () => {}
+        )
+      );
     },
-    [navigate]
+    [dispatch, ownerOf]
   );
+
+  const handleView = (task: Task) => {
+    navigate(
+      allScope ? `/user/${task.user?.id}/${task.id}` : task.id.toString()
+    );
+  };
+
+  const handleBulk = (action: (task: Task) => void) => {
+    tasks.filter((task) => selected.includes(task.id)).forEach(action);
+    setSelected([]);
+  };
+
+  useEffect(() => setSelected([]), [currentTab, scope, query]);
+
+  useEffect(() => {
+    if (!canSeeAll) return;
+    // shortcut: the filter lists the first 100 employees, switch to a searchable picker beyond that.
+    axiosInstance
+      .get<{ data: User[] }>(endPoint("user"), {
+        params: {
+          role: "EMPLOYEE",
+          perPage: 100,
+          orderBy: "username",
+          orderDir: "asc",
+        },
+      })
+      .then(({ data }) => setEmployees(data.data))
+      .catch(() => {});
+  }, [canSeeAll]);
 
   const columns: GridColDef[] = [
+    ...(allScope
+      ? [
+          {
+            headerName: "Employee",
+            field: "user",
+            sortable: false,
+            flex: 1,
+            valueGetter: ({ row }) => row.user?.username,
+          } as GridColDef,
+        ]
+      : []),
     {
       headerName: "Title",
       field: "title",
@@ -125,6 +203,28 @@ function TaskList() {
       sortable: false,
     },
     {
+      headerName: "Priority",
+      field: "priority",
+      sortable: false,
+      renderCell: ({ value }) => <PriorityChip priority={value} />,
+    },
+    {
+      headerName: "Due Date",
+      field: "dueDate",
+      flex: 1,
+      sortable: false,
+      renderCell: ({ row, value }) =>
+        isOverdue(row) ? (
+          <Chip
+            size="small"
+            color="error"
+            label={`Overdue · ${formatDueDate(value)}`}
+          />
+        ) : (
+          formatDueDate(value)
+        ),
+    },
+    {
       headerName: "Created At",
       field: "createdAt",
       flex: 1,
@@ -145,29 +245,34 @@ function TaskList() {
       field: "actions",
       align: "center",
       flex: 1,
-      getActions: ({ id, row: { removedAt, ...row } }) => [
-        <Checkbox
-          onChange={() => handleCompletedToggle(row)}
-          checked={row.completed}
-          color="success"
-          disabled={Boolean(removedAt)}
-        />,
-        <IconButton
-          onClick={() => handleEdit(id)}
-          disabled={Boolean(removedAt)}
-        >
-          <EditIcon color={removedAt ? "disabled" : "primary"} />
-        </IconButton>,
-        <IconButton
-          onClick={() => handleDelete(id)}
-          disabled={Boolean(removedAt)}
-        >
-          <DeleteIcon color={removedAt ? "disabled" : "error"} />
-        </IconButton>,
-        <IconButton onClick={() => handleView(id)}>
-          <VisibilityIcon color="primary" />
-        </IconButton>,
-      ],
+      getActions: ({ row }: { row: Task }) => {
+        const removed = Boolean(row.removedAt);
+        return [
+          <Checkbox
+            onChange={() => handleCompletedToggle(row)}
+            checked={row.completed}
+            color="success"
+            disabled={removed}
+          />,
+          <IconButton onClick={() => handleEdit(row)} disabled={removed}>
+            <EditIcon color={removed ? "disabled" : "primary"} />
+          </IconButton>,
+          removed ? (
+            <Tooltip title="Restore">
+              <IconButton onClick={() => handleRestore(row)}>
+                <RestoreIcon color="success" />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <IconButton onClick={() => handleDelete(row)}>
+              <DeleteIcon color="error" />
+            </IconButton>
+          ),
+          <IconButton onClick={() => handleView(row)}>
+            <VisibilityIcon color="primary" />
+          </IconButton>,
+        ];
+      },
     },
   ];
 
@@ -180,25 +285,101 @@ function TaskList() {
       ? handleToDate(query.toDate).toISOString()
       : undefined;
 
+    const { status, sort, employeeId, ...rest } = query;
+    const [orderBy, orderDir] = (sort || "createdAt:desc").split(":") as [
+      string,
+      "asc" | "desc",
+    ];
+
     dispatch(
       getTasksAsync(
         currentTab === 1,
-        { ...query, fromDate, toDate, userId },
+        {
+          ...rest,
+          priority: rest.priority || undefined,
+          completed:
+            status === "true" ? true : status === "false" ? false : undefined,
+          overdue: status === "overdue" ? true : undefined,
+          orderBy,
+          orderDir,
+          fromDate,
+          toDate,
+          userId: allScope ? Number(employeeId) || undefined : userId,
+          all: allScope,
+        },
         () => {},
         () => {}
       )
     );
-  }, [query, dispatch, currentTab, userId]);
+  }, [query, dispatch, currentTab, userId, allScope]);
 
   return (
     <div>
-      <Typography variant="h4">Task List</Typography>
+      <Box
+        sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}
+      >
+        <Typography variant="h4">Task List</Typography>
+        {canSeeAll && (
+          <ToggleButtonGroup
+            size="small"
+            color="primary"
+            exclusive
+            value={scope}
+            onChange={(_, value) => {
+              if (!value) return;
+              setScope(value);
+              setQuery((prev) => ({ ...prev, page: 1 }));
+            }}
+          >
+            <ToggleButton value="mine">My tasks</ToggleButton>
+            <ToggleButton value="all">All employees</ToggleButton>
+          </ToggleButtonGroup>
+        )}
+      </Box>
       <TaskFilter
         handleAdd={handleAdd}
         handleChange={handleChange}
         query={query}
+        employees={allScope ? employees : undefined}
       />
       <TabsHandler onChange={handleTabsChange} />
+      {selected.length > 0 && (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, my: 1 }}>
+          <Typography variant="body2">{selected.length} selected:</Typography>
+          {currentTab === 1 ? (
+            <Button size="small" onClick={() => handleBulk(handleRestore)}>
+              Restore
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="small"
+                color="success"
+                onClick={() =>
+                  handleBulk((task) => handleCompletedToggle(task, true))
+                }
+              >
+                Mark completed
+              </Button>
+              <Button
+                size="small"
+                onClick={() =>
+                  handleBulk((task) => handleCompletedToggle(task, false))
+                }
+              >
+                Mark inCompleted
+              </Button>
+              <Button
+                size="small"
+                color="error"
+                onClick={() => handleBulk(handleDelete)}
+              >
+                Delete
+              </Button>
+            </>
+          )}
+        </Box>
+      )}
       <Table
         columns={columns}
         rows={tasks}
@@ -206,6 +387,10 @@ function TaskList() {
         defaultPage={query.page}
         onChangePage={(page) => setQuery((prev) => ({ ...prev, page }))}
         perPage={query.perPage}
+        checkboxSelection
+        disableRowSelectionOnClick
+        rowSelectionModel={selected}
+        onRowSelectionModelChange={setSelected}
       />
     </div>
   );

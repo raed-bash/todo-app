@@ -12,4 +12,9 @@ export enum Endpoint {
   my,
   token,
   send,
+  restore,
+  stats,
+  me,
+  comments,
+  "read-all",
 }

@@ -13,6 +13,12 @@ import { PagesController } from "src/constants/pages-controller";
 import { useNavigate, useParams } from "react-router-dom";
 import { pick } from "lodash";
 import ButtonEdit from "src/components/button-handler/button-edit";
+import {
+  taskExtraInputs,
+  taskExtraSchema,
+  toTaskPayload,
+} from "./components/task-fields";
+import { dueDateToInput } from "./task-dates";
 
 function TaskEdit() {
   const dispatch = useAppDispatch();
@@ -22,16 +28,25 @@ function TaskEdit() {
   const [loading, setLoading] = useState(true);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
   const formik = useFormik({
-    initialValues: { userId, id: null, title: "", completed: null },
+    initialValues: {
+      userId,
+      id: null as number | null,
+      title: "",
+      completed: null as boolean | null,
+      description: "",
+      priority: "MEDIUM" as Task["priority"],
+      dueDate: "",
+    },
     validationSchema: Yup.object({
-      title: Yup.string().min(3).optional(),
+      title: Yup.string().min(3).max(200).optional(),
+      ...taskExtraSchema,
       completed: Yup.boolean().optional(),
     }),
     onSubmit(values) {
       setLoadingSubmit(true);
       dispatch(
         editTaskAsync(
-          values,
+          toTaskPayload(values),
           () => {
             setLoadingSubmit(false);
             navigate(-1);
@@ -65,6 +80,7 @@ function TaskEdit() {
         },
       ],
     },
+    ...taskExtraInputs,
   ];
 
   useEffect(() => {
@@ -74,11 +90,12 @@ function TaskEdit() {
         getTaskAsync(
           { id, userId },
           (task) => {
-            Object.entries(pick(task, ["completed", "title", "id"])).forEach(
-              ([key, value]) => {
-                formik.setFieldValue(key, value);
-              }
-            );
+            formik.setValues({
+              ...formik.values,
+              ...pick(task, ["completed", "title", "id", "priority"]),
+              description: task.description ?? "",
+              dueDate: dueDateToInput(task.dueDate),
+            });
             setLoading(false);
           },
           () => {}
@@ -105,6 +122,12 @@ export default withAllowedRoles(TaskEdit, PagesController.task.roles);
 
 export class EditTaskDto implements Pick<Task, "title"> {
   title!: string;
+
+  description?: string;
+
+  priority?: Task["priority"];
+
+  dueDate?: string | null;
 
   completed!: boolean | null;
 
