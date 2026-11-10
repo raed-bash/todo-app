@@ -26,6 +26,7 @@ import NotificationsBox from "../components/notifications/notifications-box";
 import { onMessageListener, requestPermission } from "src/firebase/firebase";
 import { toast } from "react-toastify";
 import LogoutButton from "src/components/button-handler/logout-button";
+import ChangeOwnPassword from "src/components/change-own-password";
 import { useAppDispatch } from "src/app/hooks";
 import { actions } from "src/app/slice";
 
@@ -210,8 +211,11 @@ export default function Layout() {
           sx={{
             display: "flex",
             justifyContent: "center",
+            flexWrap: "wrap",
+            gap: 1,
           }}
         >
+          <ChangeOwnPassword />
           <LogoutButton onClick={handleLogout} />
         </Box>
       </DrawerStyled>
