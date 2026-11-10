@@ -4,8 +4,13 @@ import { withAllowedRoles } from "src/HOC/with-allowed-Roles";
 import { useAppDispatch, useAppSelector } from "src/app/hooks";
 import { PagesController } from "src/constants/pages-controller";
 import { getUserAsync } from "./reducer/actions";
-import { CircularProgress, Grid, Typography } from "@mui/material";
-import LabelValue from "src/components/text-view/label-value";
+import { Chip, CircularProgress, Typography } from "@mui/material";
+import InfoSection from "src/components/text-view/info-section";
+import PersonIcon from "@mui/icons-material/Person";
+import BadgeIcon from "@mui/icons-material/Badge";
+import ShieldIcon from "@mui/icons-material/Shield";
+import EventIcon from "@mui/icons-material/Event";
+import UpdateIcon from "@mui/icons-material/Update";
 
 function UserView() {
   const { userId: strId } = useParams();
@@ -47,46 +52,44 @@ function UserView() {
   return (
     <div>
       <Typography variant="h4">User Info</Typography>
-      <Grid
-        container
-        spacing={1}
-        bgcolor="#e0e0e1"
-        style={{
-          padding: "10px",
-          borderRadius: "5px",
-          marginTop: "20px",
-          marginBottom: "20px",
-        }}
-      >
-        <Grid item xs={6}>
-          <LabelValue label="Username" value={user.username} />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue label="Role" value={user.role} />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue
-            label="Status"
-            value={user.locked ? "Blocked" : "Active"}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue
-            label="Created At"
-            value={user.createdAt && new Date(user.createdAt).toLocaleString()}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue
-            label="Updated At"
-            value={
-              user.updatedAt
-                ? new Date(user.updatedAt).toLocaleString()
-                : undefined
-            }
-          />
-        </Grid>
-      </Grid>
+      <InfoSection
+        title={user.username}
+        items={[
+          { label: "Username", value: user.username, icon: <PersonIcon /> },
+          {
+            label: "Role",
+            icon: <BadgeIcon />,
+            value: (
+              <Chip
+                size="small"
+                color={user.role === "ADMIN" ? "primary" : "default"}
+                label={user.role}
+              />
+            ),
+          },
+          {
+            label: "Status",
+            icon: <ShieldIcon />,
+            value: (
+              <Chip
+                size="small"
+                color={user.locked ? "error" : "success"}
+                label={user.locked ? "Blocked" : "Active"}
+              />
+            ),
+          },
+          {
+            label: "Created At",
+            icon: <EventIcon />,
+            value: user.createdAt && new Date(user.createdAt).toLocaleString(),
+          },
+          {
+            label: "Updated At",
+            icon: <UpdateIcon />,
+            value: user.updatedAt && new Date(user.updatedAt).toLocaleString(),
+          },
+        ]}
+      />
       <Outlet />
     </div>
   );

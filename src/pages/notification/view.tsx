@@ -1,9 +1,12 @@
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { useEffect, useMemo } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "src/app/hooks";
 import { getNotificationAsync } from "./reducer/actions";
-import LabelValue from "src/components/text-view/label-value";
+import InfoSection from "src/components/text-view/info-section";
+import TitleIcon from "@mui/icons-material/Title";
+import EventIcon from "@mui/icons-material/Event";
+import MessageIcon from "@mui/icons-material/Message";
 
 function NotificationView() {
   const { notificationId: notificationIdStr } = useParams();
@@ -45,31 +48,23 @@ function NotificationView() {
   return (
     <div>
       <Typography variant="h4">Notification Info</Typography>
-
-      <Grid
-        container
-        spacing={1}
-        bgcolor="#e0e0e1"
-        style={{
-          padding: "10px",
-          borderRadius: "5px",
-          marginTop: "20px",
-          marginBottom: "20px",
-        }}
-      >
-        <Grid item xs={6}>
-          <LabelValue label="Title" value={notification.title} />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue label="Body" value={notification.body} />
-        </Grid>
-        <Grid item xs={6}>
-          <LabelValue
-            label="Created At"
-            value={new Date(notification.createdAt).toLocaleString()}
-          />
-        </Grid>
-      </Grid>
+      <InfoSection
+        title={notification.title}
+        items={[
+          { label: "Title", value: notification.title, icon: <TitleIcon /> },
+          {
+            label: "Created At",
+            value: new Date(notification.createdAt).toLocaleString(),
+            icon: <EventIcon />,
+          },
+          {
+            label: "Body",
+            value: notification.body,
+            icon: <MessageIcon />,
+            full: true,
+          },
+        ]}
+      />
       <div>
         <Outlet />
       </div>
