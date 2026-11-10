@@ -216,14 +216,15 @@ export default function Layout() {
         </Toolbar>
         <Divider />
         <List component="nav" sx={{ pt: 1.5, flex: 1 }}>
-          <ListLinks />
+          <ListLinks collapsed={!isExpand} />
         </List>
         <Divider />
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
-            flexWrap: "wrap",
+            flexDirection: isExpand ? "row" : "column",
+            alignItems: "center",
             gap: 1,
             py: 1.5,
           }}

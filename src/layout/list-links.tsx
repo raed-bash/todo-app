@@ -3,6 +3,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListItem,
+  Tooltip,
 } from "@mui/material";
 import { NavLinkProps, useLocation } from "react-router-dom";
 import { styled } from "@mui/material";
@@ -22,7 +23,7 @@ export const NavLiLink = styled(ListItem)(({ theme }) => ({
 
 export const links: PageControllerTypes[] = Object.values(PagesController);
 
-export function ListLinks() {
+export function ListLinks({ collapsed = false }: { collapsed?: boolean }) {
   const currentRoles = useAppSelector((state) => state.app.roles);
   return (
     <>
@@ -32,13 +33,24 @@ export function ListLinks() {
             currentRoles.some((role) => roles?.includes(role)) !== false
         )
         .map(({ title, Icon, to }) => (
-          <Link key={to} title={title} Icon={Icon} to={to} />
+          <Link
+            key={to}
+            title={title}
+            Icon={Icon}
+            to={to}
+            collapsed={collapsed}
+          />
         ))}
     </>
   );
 }
 
-function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
+function Link({
+  Icon,
+  title,
+  to,
+  collapsed,
+}: Omit<PageControllerTypes, "roles"> & { collapsed: boolean }) {
   const isEqualCurrentPathname = useIsEqualCurrentPathname();
   const isActive = isEqualCurrentPathname(to);
 
@@ -55,15 +67,25 @@ function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
         } as NavLinkProps,
       }}
     >
-      <ListItemButton selected={isActive} sx={{ py: 1 }}>
-        <ListItemIcon sx={{ color: "text.secondary" }}>
-          <Icon fontSize="small" />
-        </ListItemIcon>
-        <ListItemText
-          primary={title}
-          primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }}
-        />
-      </ListItemButton>
+      <Tooltip title={collapsed ? title : ""} placement="right">
+        <ListItemButton
+          selected={isActive}
+          aria-label={title}
+          sx={{ py: 1, justifyContent: collapsed ? "center" : "flex-start" }}
+        >
+          <ListItemIcon
+            sx={{ color: "text.secondary", minWidth: collapsed ? 0 : 40 }}
+          >
+            <Icon fontSize="small" />
+          </ListItemIcon>
+          {!collapsed && (
+            <ListItemText
+              primary={title}
+              primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }}
+            />
+          )}
+        </ListItemButton>
+      </Tooltip>
     </NavLiLink>
   );
 }

@@ -244,7 +244,9 @@ function TaskList() {
       type: "actions",
       field: "actions",
       align: "center",
-      flex: 1,
+      // fixed width so all 4 buttons fit
+      width: 200,
+      minWidth: 200,
       getActions: ({ row }: { row: Task }) => {
         const removed = Boolean(row.removedAt);
         return [

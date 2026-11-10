@@ -135,7 +135,9 @@ function UserList() {
       field: "actions",
       type: "actions",
       align: "right",
-      flex: 1,
+      // fixed width so all 4 buttons fit
+      width: 200,
+      minWidth: 200,
       getActions: ({ id, row }) => [
         <IconButton onClick={() => handleEdit(id)}>
           <EditIcon color="primary" />
