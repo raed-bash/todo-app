@@ -11,8 +11,10 @@ import {
   IconButton,
   Container,
   Link,
+  Tooltip,
   useTheme,
 } from "@mui/material";
+import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -163,28 +165,20 @@ export default function Layout() {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            {PagesController[location.pathname.slice(1)]?.title}
+            {PagesController[location.pathname.split("/")[1]]?.title}
           </Typography>
-          <Box sx={{ display: "flex", columnGap: "10px" }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                columnGap: "5px",
-              }}
+          <Box sx={{ display: "flex", alignItems: "center", columnGap: 1 }}>
+            <Tooltip
+              title={theme.palette.mode === "dark" ? "Light mode" : "Dark mode"}
             >
-              <Typography sx={{ textTransform: "capitalize" }}>
-                {theme.palette.mode}
-              </Typography>
               <IconButton color="inherit" onClick={toggleThemeMode}>
                 {theme.palette.mode === "dark" ? (
-                  <Brightness4Icon />
-                ) : (
                   <Brightness7Icon />
+                ) : (
+                  <Brightness4Icon />
                 )}
               </IconButton>
-            </Box>
+            </Tooltip>
             <NotificationsBox />
           </Box>
         </Toolbar>
@@ -194,25 +188,44 @@ export default function Layout() {
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
-            px: [1],
+            justifyContent: "space-between",
+            px: [1.5],
           }}
         >
+          {isExpand && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  p: 0.75,
+                  borderRadius: 2,
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                }}
+              >
+                <TaskAltIcon fontSize="small" />
+              </Box>
+              <Typography variant="h6" fontWeight={700} noWrap>
+                Todo
+              </Typography>
+            </Box>
+          )}
           <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Divider />
-        <List component="nav">
+        <List component="nav" sx={{ pt: 1.5, flex: 1 }}>
           <ListLinks />
-          <Divider sx={{ my: 1 }} />
         </List>
+        <Divider />
         <Box
           sx={{
             display: "flex",
             justifyContent: "center",
             flexWrap: "wrap",
             gap: 1,
+            py: 1.5,
           }}
         >
           <ChangeOwnPassword />
@@ -222,10 +235,7 @@ export default function Layout() {
       <Box
         component="main"
         sx={{
-          backgroundColor: (theme) =>
-            theme.palette.mode === "light"
-              ? theme.palette.grey[100]
-              : theme.palette.grey[900],
+          backgroundColor: "background.default",
           flexGrow: 1,
           height: "100vh",
           overflow: "auto",

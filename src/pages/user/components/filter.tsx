@@ -1,4 +1,5 @@
-import { Box, Button, MenuItem } from "@mui/material";
+import { Button, MenuItem, Paper } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { TextFieldHandler } from "src/components/text-field-handler";
 import { Role } from "src/constants/roles";
 import { QueryUserDto } from "../reducer/actions";
@@ -27,7 +28,10 @@ function UserFilter(props: Props) {
   const { query, handleChange, handleAdd } = props;
 
   return (
-    <Box sx={{ marginY: 2, display: "flex", columnGap: "10px" }}>
+    <Paper
+      variant="outlined"
+      sx={{ p: 2, my: 2, borderRadius: 2, display: "flex", columnGap: "10px" }}
+    >
       <TextFieldHandler
         label="Search"
         name="username"
@@ -63,10 +67,15 @@ function UserFilter(props: Props) {
           </MenuItem>
         ))}
       </TextFieldHandler>
-      <Button sx={{ width: "30vw" }} variant="contained" onClick={handleAdd}>
-        Add
+      <Button
+        variant="contained"
+        onClick={handleAdd}
+        startIcon={<AddIcon />}
+        sx={{ flexShrink: 0, whiteSpace: "nowrap", px: 3 }}
+      >
+        New user
       </Button>
-    </Box>
+    </Paper>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Box, Pagination } from "@mui/material";
+import { Box, Pagination, Paper, Typography } from "@mui/material";
 import { DataGrid, DataGridProps, GridColDef } from "@mui/x-data-grid";
 
 type Props = {
@@ -43,26 +43,39 @@ function Table(props: Props) {
   } = props;
 
   return (
-    <DataGrid
-      columns={columns}
-      rows={rows}
-      slots={{
-        pagination: () => (
-          <Box sx={{ display: "flex", alignItems: "center", mx: 2 }}>
-            <Pagination
-              count={Math.ceil(total / perPage)}
-              onChange={(_, value) => onChangePage(value)}
-              defaultPage={defaultPage}
-            />
-            Total: {total}
-          </Box>
-        ),
-      }}
-      initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-      disableColumnFilter
-      disableColumnMenu
-      {...otherProps}
-    />
+    <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
+      <DataGrid
+        columns={columns}
+        rows={rows}
+        slots={{
+          pagination: () => (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mx: 2 }}>
+              <Pagination
+                count={Math.ceil(total / perPage)}
+                onChange={(_, value) => onChangePage(value)}
+                defaultPage={defaultPage}
+              />
+              <Typography variant="body2" color="text.secondary">
+                Total: {total}
+              </Typography>
+            </Box>
+          ),
+        }}
+        initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+        disableColumnFilter
+        disableColumnMenu
+        {...otherProps}
+        sx={{
+          border: 0,
+          "& .MuiDataGrid-columnHeaders": { bgcolor: "action.hover" },
+          "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 600 },
+          "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
+            outline: "none",
+          },
+          ...otherProps.sx,
+        }}
+      />
+    </Paper>
   );
 }
 

@@ -5,7 +5,7 @@ import {
   ListItem,
 } from "@mui/material";
 import { NavLinkProps, useLocation } from "react-router-dom";
-import { styled, useTheme } from "@mui/material";
+import { styled } from "@mui/material";
 import { useAppSelector } from "../app/hooks";
 import NavLinkWrapper from "../components/nav-link-wrapper";
 import type { PathsWithSlash } from "../constants/paths";
@@ -14,11 +14,10 @@ import {
   PagesController,
 } from "../constants/pages-controller";
 
-export const NavLiLink = styled(ListItem)(() => ({
-  backgroundColor: "white",
+export const NavLiLink = styled(ListItem)(({ theme }) => ({
   position: "relative",
   zIndex: 1000,
-  color: "#000",
+  color: theme.palette.text.primary,
 }));
 
 export const links: PageControllerTypes[] = Object.values(PagesController);
@@ -40,13 +39,13 @@ export function ListLinks() {
 }
 
 function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
-  const theme = useTheme();
   const isEqualCurrentPathname = useIsEqualCurrentPathname();
   const isActive = isEqualCurrentPathname(to);
-  const isDarkMode = theme.palette.mode === "dark";
 
   return (
     <NavLiLink
+      disablePadding
+      sx={{ px: 1, py: 0.25 }}
       slots={{ root: NavLinkWrapper }}
       slotProps={{
         // @ts-ignore
@@ -56,17 +55,13 @@ function Link({ Icon, title, to }: Omit<PageControllerTypes, "roles">) {
         } as NavLinkProps,
       }}
     >
-      <ListItemButton style={{ background: isActive ? "#e7e7e7" : "" }}>
-        <ListItemIcon>
-          <Icon
-            sx={{
-              color: isActive ? "#1976d2" : isDarkMode ? "#fff" : "#000",
-            }}
-          />
+      <ListItemButton selected={isActive} sx={{ py: 1 }}>
+        <ListItemIcon sx={{ color: "text.secondary" }}>
+          <Icon fontSize="small" />
         </ListItemIcon>
         <ListItemText
           primary={title}
-          sx={{ color: isActive ? "#1976d2" : isDarkMode ? "#fff" : "#000" }}
+          primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }}
         />
       </ListItemButton>
     </NavLiLink>
